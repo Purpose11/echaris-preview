@@ -22,13 +22,13 @@ function TrustPanel() {
   ];
   return (
     <aside className="panel">
-      <Logo variant="white" height={26} src={logoWhite} style={{ alignSelf: 'flex-start' }} />
+      <Logo variant="white" height={26} src={logoWhite} style={{ alignSelf: 'flex-start' }} className="anim-in anim-in-1" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className="anim-in anim-in-2" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <span className="micro">ECharis client portal</span>
           <h2 style={{ margin: 0, fontSize: 'var(--fs-h1)', fontWeight: 'var(--fw-extrabold)', letterSpacing: 'var(--ls-display)', lineHeight: 'var(--lh-tight)', color: '#fff', maxWidth: 440 }}>Manage your capital, track performance returns, and access marketplace financing from one secure platform.</h2>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 28, borderTop: '1px solid rgba(255,255,255,.12)' }}>
+        <div className="anim-in anim-in-3" style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 28, borderTop: '1px solid rgba(255,255,255,.12)' }}>
           {items.map(([icon, t, d]) => (
             <div className="trust" key={t}>
               <Icon name={icon} size={20} style={{ color: 'var(--brand-primary)', marginTop: 2, flex: 'none' }} />
@@ -93,11 +93,11 @@ export default function Login() {
             </Card>
           ) : (
             <React.Fragment>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="anim-in anim-in-1" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <h1 style={{ margin: 0, fontSize: 'var(--fs-h1)', fontWeight: 'var(--fw-extrabold)', letterSpacing: 'var(--ls-display)', lineHeight: 'var(--lh-tight)', color: 'var(--text-heading)' }}>Welcome back</h1>
                 <p style={{ margin: 0, fontSize: 'var(--fs-body)', color: 'var(--text-muted)' }}>Log in to view your capital, returns and wallet balance.</p>
               </div>
-              <Card padding={28}>
+              <Card padding={28} className="anim-in anim-in-2">
                 <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                   {formError && <Alert tone="danger" title="Log in failed">{formError}</Alert>}
                   <FormField label="Email address" htmlFor="email" error={errors.email}>
@@ -115,7 +115,7 @@ export default function Login() {
                   <Button type="submit" fullWidth size="lg" loading={status === 'loading'}>{status === 'loading' ? 'Logging in' : 'Log in'}</Button>
                 </form>
               </Card>
-              <p style={{ margin: 0, textAlign: 'center', fontSize: 'var(--fs-body-sm)', color: 'var(--text-muted)' }}>New to Echaris? <a href="/register" onClick={e => { e.preventDefault(); navigate('/register'); }} style={{ fontWeight: 'var(--fw-semibold)' }}>Create an account</a></p>
+              <p className="anim-in anim-in-3" style={{ margin: 0, textAlign: 'center', fontSize: 'var(--fs-body-sm)', color: 'var(--text-muted)' }}>New to Echaris? <a href="/register" onClick={e => { e.preventDefault(); navigate('/register'); }} style={{ fontWeight: 'var(--fw-semibold)' }}>Create an account</a></p>
             </React.Fragment>
           )}
         </div>

@@ -4,6 +4,7 @@ import { SiteHeader } from '../design-system/components/navigation/SiteHeader.js
 import { SiteFooter } from '../design-system/components/navigation/SiteFooter.jsx';
 import { Button } from '../design-system/components/core/Button.jsx';
 import { Icon } from '../design-system/components/core/Icon.jsx';
+import { Reveal } from '../components/Reveal.jsx';
 import logoOrange from '../assets/echaris-logo-orange.png';
 import logoWhite from '../assets/echaris-logo-white.png';
 
@@ -61,8 +62,8 @@ export default function Services() {
       <section className="ab-hero-band">
         <div className="wrap ab-hero">
           <div className="ab-hero-l">
-            <h1 className="ab-h1">Our <span className="ab-em">services</span></h1>
-            <p className="ab-lead">
+            <h1 className="ab-h1 anim-in anim-in-1">Our <span className="ab-em">services</span></h1>
+            <p className="ab-lead anim-in anim-in-2">
               Capital growth programs, performance tracking, marketplace financing and referral rewards on one client account.
             </p>
           </div>
@@ -71,12 +72,12 @@ export default function Services() {
 
       <section className="band" style={{ background: 'var(--surface-card)' }}>
         <div className="wrap" style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
-          <div className="hw-in">
+          <Reveal as="div" className="hw-in">
             <span className="hw-pill">What we offer</span>
             <h2 className="hw-h"><span className="hw-em">Four services,</span><br />one client account.</h2>
-          </div>
+          </Reveal>
 
-          <div className="svc">
+          <Reveal as="div" className="svc reveal-group" delay={80}>
             <div className="svc-c">
               <span className="svc-ic"><Icon name="trending-up" size={24} /></span>
               <span className="svl-k">Growth program</span>
@@ -101,7 +102,7 @@ export default function Services() {
               <h3 className="svc-t">Referral rewards</h3>
               <p className="svc-d">Every client gets a referral code. When someone who joins with your code activates their first growth program, ₦3,000 is credited to your wallet. There is no cap, and the reward is paid by Echaris.</p>
             </div>
-          </div>
+          </Reveal>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Button size="lg" iconRight="arrow-right" onClick={reg}>Get Started</Button>
           </div>
@@ -110,18 +111,18 @@ export default function Services() {
 
       <section className="band" style={{ background: 'var(--surface-card)' }}>
         <div className="wrap" style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
-          <div className="hw-in" style={{ alignItems: 'center', textAlign: 'center' }}>
+          <Reveal as="div" className="hw-in" style={{ alignItems: 'center', textAlign: 'center' }}>
             <span className="hw-pill">Questions</span>
             <h2 className="hw-h"><span className="hw-em">Frequently asked</span><br />questions.</h2>
-          </div>
-          <div className="faq">
+          </Reveal>
+          <Reveal as="div" className="faq" delay={80}>
             {FAQ.map(([q, a]) => (
               <details className="faq-i" key={q}>
                 <summary className="faq-q"><span>{q}</span><Icon name="plus" size={18} /></summary>
                 <p className="faq-a">{a}</p>
               </details>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 

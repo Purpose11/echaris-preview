@@ -7,6 +7,9 @@ import { Card } from '../design-system/components/core/Card.jsx';
 import { Icon } from '../design-system/components/core/Icon.jsx';
 import { Badge } from '../design-system/components/core/Badge.jsx';
 import { ProgressMeter } from '../design-system/components/data/ProgressMeter.jsx';
+import { Reveal } from '../components/Reveal.jsx';
+import { useRotatingWord } from '../hooks/useRotatingWord.js';
+import { useCountUp } from '../hooks/useCountUp.js';
 import logoOrange from '../assets/echaris-logo-orange.png';
 import logoWhite from '../assets/echaris-logo-white.png';
 
@@ -42,6 +45,13 @@ function Row({ label, value }) {
   return <div className="row"><span className="row-l">{label}</span><span className="row-v">{value}</span></div>;
 }
 
+const naira = n => '₦' + Math.round(n).toLocaleString('en-NG');
+
+function LiveAmount({ target, delayMs = 0, durationMs = 1400, prefix = '', className }) {
+  const value = useCountUp(target, { durationMs, delayMs });
+  return <span className={className}>{prefix}{naira(value)}</span>;
+}
+
 const GP_STEPS = [
   ['01', 'Commit capital', '3-month term'],
   ['02', "Withdraw 3 months' returns", '30% available immediately'],
@@ -74,6 +84,7 @@ const CY = v => 222 - (v / MAX) * 202;
 function Candles() {
   const closes = CANDLES.map((c, i) => [CX(i), CY(c[1])]);
   const trend = closes.map(([x, y], i) => (i ? 'L' : 'M') + x + ' ' + y).join(' ');
+  const [lastX, lastY] = closes[closes.length - 1];
   return (
     <svg className="chart" viewBox="0 0 560 268" role="img" aria-label="Candlestick chart of accumulated performance returns rising to ₦150,000 over three months">
       <defs>
@@ -95,16 +106,18 @@ function Candles() {
       ))}
       {CANDLES.map((c, i) => <line key={'v' + i} x1={CX(i)} x2={CX(i)} y1="20" y2="222" stroke="rgba(255,255,255,.03)" strokeWidth="1" />)}
 
-      <path d={trend + ' L' + CX(11) + ' 222 L' + CX(0) + ' 222 Z'} fill="url(#tarea)" />
-      <path d={trend} fill="none" stroke="#FF5A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity=".85" filter="url(#tglow)" />
+      <path className="chart-area" d={trend + ' L' + CX(11) + ' 222 L' + CX(0) + ' 222 Z'} fill="url(#tarea)" />
+      <path className="chart-trend" pathLength="1" d={trend} fill="none" stroke="#FF5A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity=".85" filter="url(#tglow)" />
 
       {CANDLES.map(([o, c, l, hi], i) => {
         const up = c >= o, col = up ? 'var(--success-500)' : 'var(--danger-500)';
         const top = CY(Math.max(o, c)), bot = CY(Math.min(o, c));
+        const isLast = i === CANDLES.length - 1;
         return (
           <g key={i}>
             <line x1={CX(i)} x2={CX(i)} y1={CY(hi)} y2={CY(l)} stroke={col} strokeWidth="1.5" />
-            <rect x={CX(i) - CW / 2} y={top} width={CW} height={Math.max(3, bot - top)} rx="2" fill={col} />
+            <rect className={'chart-bar' + (isLast ? ' chart-bar-live' : '')} style={{ animationDelay: (i * 70) + 'ms, ' + (1200 + i * 70) + 'ms' }}
+              x={CX(i) - CW / 2} y={top} width={CW} height={Math.max(3, bot - top)} rx="2" fill={col} />
           </g>
         );
       })}
@@ -113,6 +126,8 @@ function Candles() {
       <rect x="502" y={CY(300) - 10} width="52" height="20" rx="4" fill="#FF5A00" />
       <text x="528" y={CY(300) + 4} textAnchor="middle" fontSize="10.5" fontWeight="700" fill="#fff" fontFamily="var(--font-mono)">150k</text>
 
+      <circle className="chart-live-ring" cx={lastX} cy={lastY} r="5" fill="none" stroke="#FF5A00" strokeWidth="1.5" />
+      <circle className="chart-live-dot" cx={lastX} cy={lastY} r="4" fill="#FF5A00" stroke="#1A1A1A" strokeWidth="1.5" />
       <line x1="34" x2="500" y1="222" y2="222" stroke="rgba(255,255,255,.14)" strokeWidth="1.5" />
       {['M1', 'M2', 'M3'].map((m, i) => (
         <text key={m} x={CX(i * 4) + 57} y="244" textAnchor="middle" fontSize="10" fontWeight="700" letterSpacing=".05em" fill="rgba(255,255,255,.4)" fontFamily="var(--font-mono)">{m}</text>
@@ -121,11 +136,14 @@ function Candles() {
   );
 }
 
+const HERO_WORDS = ['Purpose', 'Confidence', 'Clarity', 'Structure'];
+
 export default function Home() {
   const navigate = useNavigate();
   const go = href => navigate(href);
   const reg = () => navigate('/register');
   const login = () => navigate('/login');
+  const [heroWord, heroWordKey] = useRotatingWord(HERO_WORDS);
   return (
     <div>
       <SiteHeader links={LINKS} activeHref="/" onNavigate={go} onLogin={login} onRegister={reg}
@@ -134,26 +152,26 @@ export default function Home() {
       <section className="band hero-band">
         <div className="wrap split">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            <span className="hero-kicker"><Icon name="shield-check" size={15} />CAC registered · RC 9450649</span>
-            <h1 className="hero-h1">
-              Build with your capital<br /><span className="hero-em">Grow with Purpose.</span>
+            <span className="hero-kicker anim-in anim-in-1"><Icon name="shield-check" size={15} />CAC registered · RC 9450649</span>
+            <h1 className="hero-h1 anim-in anim-in-2">
+              Build with your capital<br /><span className="hero-em">Grow with <span key={heroWordKey} className="hero-word-in">{heroWord}.</span></span>
             </h1>
-            <p className="lead hero-lead" style={{ maxWidth: 500 }}>
+            <p className="lead hero-lead anim-in anim-in-3" style={{ maxWidth: 500 }}>
               ECharis provides a structured platform for managing capital commitments, tracking performance returns, and accessing marketplace financing opportunities.
             </p>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <div className="anim-in anim-in-4" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <Button size="lg" onClick={reg}>Get started</Button>
               <Button size="lg" variant="inverse" onClick={() => navigate('/marketplace')}>Browse Marketplace</Button>
             </div>
           </div>
 
-          <div className="hero-art">
+          <div className="hero-art anim-in anim-in-3">
             <div className="tick">
               <div className="tick-l">
                 <span className="hero-micro">ECH · Accumulated performance returns</span>
                 <div className="tick-row">
-                  <span className="hero-art-v">₦150,000</span>
-                  <span className="tick-up"><Icon name="trending-up" size={14} />+₦150,000</span>
+                  <LiveAmount className="hero-art-v" target={150000} durationMs={1800} />
+                  <span className="tick-up"><Icon name="trending-up" size={14} /><LiveAmount target={150000} durationMs={1800} prefix="+" /></span>
                 </div>
               </div>
               <div className="tf">{['1M', '2M', '3M'].map(t => <span key={t} className="tf-b" data-on={t === '3M' ? '1' : '0'}>{t}</span>)}</div>
@@ -162,8 +180,8 @@ export default function Home() {
             <Candles />
 
             <div className="hero-art-grid">
-              <div className="hero-art-cell"><span className="hero-art-cl">Capital committed</span><span className="hero-art-cv">₦500,000</span></div>
-              <div className="hero-art-cell"><span className="hero-art-cl">Monthly returns</span><span className="hero-art-cv">₦50,000</span></div>
+              <div className="hero-art-cell"><span className="hero-art-cl">Capital committed</span><LiveAmount className="hero-art-cv" target={500000} delayMs={150} durationMs={1600} /></div>
+              <div className="hero-art-cell"><span className="hero-art-cl">Monthly returns</span><LiveAmount className="hero-art-cv" target={50000} delayMs={300} durationMs={1600} /></div>
               <div className="hero-art-cell"><span className="hero-art-cl">Program term</span><span className="hero-art-cv">3 months</span></div>
             </div>
           </div>
@@ -191,7 +209,7 @@ export default function Home() {
           ))}
         </svg>
         <div className="wrap who-in">
-          <div className="who-l">
+          <Reveal as="div" className="who-l">
             <span className="who-eyebrow">Who we are</span>
             <h2 className="who-h">A registered Nigerian platform for capital growth and product financing</h2>
             <p className="who-lead">
@@ -203,34 +221,34 @@ export default function Home() {
               <Button size="lg" onClick={reg}>Get started</Button>
               <Button size="lg" variant="inverse" onClick={() => navigate('/marketplace')}>Browse marketplace</Button>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="gp">
         <div className="wrap gp-in">
           <div className="gp-top">
-            <div className="gp-l">
+            <Reveal as="div" className="gp-l">
               <span className="gp-eyebrow">3-month growth program</span>
               <h2 className="gp-h">Commit capital.<br /><span className="gp-em">Withdraw 3 months' returns immediately.</span></h2>
               <p className="gp-lead">Commit your capital for 3 months, withdraw your 3-month performance returns immediately, and receive your original capital back when the 3-month term ends.</p>
               <div className="gp-cta"><Button size="lg" onClick={reg}>Commit capital</Button></div>
-            </div>
+            </Reveal>
 
-            <div className="gp-r">
+            <Reveal as="div" className="gp-r" delay={120}>
               <div className="gp-stat">
                 <span className="gp-sv">30%</span>
                 <span className="gp-sl">3-month performance returns</span>
                 <span className="gp-chip"><Icon name="zap" size={14} />Withdraw immediately</span>
               </div>
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
       <section className="band mfx">
         <div className="wrap g2">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <Reveal as="div" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <Head eyebrow="Marketplace financing" title="Point your returns at a product instead of a payout"
               lead="Marketplace financing lets you attach a capital commitment to a specific product. Your monthly performance returns accumulate against that product instead of sitting in your wallet." />
             <ul className="bullets">
@@ -242,8 +260,8 @@ export default function Home() {
             <div className="mfx-cta">
               <Button size="lg" onClick={reg}>Start financing a product</Button>
             </div>
-          </div>
-          <div className="mfx-art">
+          </Reveal>
+          <Reveal as="div" className="mfx-art" delay={120}>
             <svg className="mfx-cart" viewBox="0 0 560 420" role="img" aria-label="Sketch of a cart holding a laptop, phone, television and a box">
               <defs>
                 <linearGradient id="cg" x1="0" y1="0" x2="1" y2="1">
@@ -285,12 +303,12 @@ export default function Home() {
               <path d="M436 168 L472 132 L508 96" fill="none" stroke="#FFB800" strokeWidth="3.5" strokeLinecap="round" />
               <path d="M486 96 L508 96 L508 118" fill="none" stroke="#FFB800" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="hw">
-        <div className="wrap hw-in">
+        <Reveal as="div" className="wrap hw-in">
           <span className="hw-pill">How it works</span>
           <h2 className="hw-h"><span className="hw-em">4 steps to</span><br />structured capital growth.</h2>
           <p className="hw-lead">Registration to your first credited return, with nothing hidden in between.</p>
@@ -366,16 +384,16 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <section className="band-tight" style={{ background: 'var(--surface-page)' }}>
         <div className="wrap" style={{ display: 'flex', flexDirection: 'column', gap: 44 }}>
-          <div className="hw-in" style={{ gap: 16 }}>
+          <Reveal as="div" className="hw-in" style={{ gap: 16 }}>
             <span className="hw-pill">Why ECharis?</span>
             <h2 className="hw-h"><span className="hw-em">Built on clarity,</span><br />security and control.</h2>
-          </div>
-          <div className="why">
+          </Reveal>
+          <Reveal as="div" className="why reveal-group" delay={80}>
             {[['eye', 'Transparency', 'Clear visibility into your capital, returns and transactions.'],
               ['shield-check', 'Security', 'Secure account and payment infrastructure.'],
               ['sliders-horizontal', 'Flexibility', 'Choose from multiple program durations and manage multiple commitments.'],
@@ -386,13 +404,13 @@ export default function Home() {
                 <p className="why-d">{d}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="cta-band">
         <div className="wrap">
-          <div className="cta-panel">
+          <Reveal as="div" className="cta-panel">
             <div className="cta-l">
               <h2 className="cta-h">Ready to get started?</h2>
               <p className="cta-p">Create your ECharis client account and take the first step toward structured capital growth.</p>
@@ -403,7 +421,7 @@ export default function Home() {
                 <Button size="lg" variant="inverse" onClick={login}>Login</Button>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 

@@ -21,13 +21,13 @@ function TrustPanel() {
   ];
   return (
     <aside className="panel">
-      <Logo variant="white" height={26} src={logoWhite} style={{ alignSelf: 'flex-start' }} />
+      <Logo variant="white" height={26} src={logoWhite} style={{ alignSelf: 'flex-start' }} className="anim-in anim-in-1" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className="anim-in anim-in-2" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <span className="micro">Account recovery</span>
           <h2 style={{ margin: 0, fontSize: 'var(--fs-h1)', fontWeight: 'var(--fw-extrabold)', letterSpacing: 'var(--ls-display)', lineHeight: 'var(--lh-tight)', color: '#fff', maxWidth: 440 }}>Reset your password and get back to your client account securely.</h2>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 28, borderTop: '1px solid rgba(255,255,255,.12)' }}>
+        <div className="anim-in anim-in-3" style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 28, borderTop: '1px solid rgba(255,255,255,.12)' }}>
           {items.map(([icon, t, d]) => (
             <div className="trust" key={t}>
               <Icon name={icon} size={20} style={{ color: 'var(--brand-primary)', marginTop: 2, flex: 'none' }} />
@@ -102,11 +102,11 @@ export default function ForgotPassword() {
 
           {view === 'request' && (
             <React.Fragment>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="anim-in anim-in-1" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <h1 style={H1}>Reset your password</h1>
                 <p style={SUB}>Enter the email address on your client account and we send you a link to set a new password.</p>
               </div>
-              <Card padding={28}>
+              <Card padding={28} className="anim-in anim-in-2">
                 <form onSubmit={request} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                   <FormField label="Email address" htmlFor="email" error={err.email}>
                     <Input id="email" type="email" inputMode="email" autoComplete="email" iconLeft="mail" placeholder="Enter your email address"
@@ -115,7 +115,7 @@ export default function ForgotPassword() {
                   <Button type="submit" fullWidth size="lg" loading={busy}>{busy ? 'Sending reset link' : 'Send reset link'}</Button>
                 </form>
               </Card>
-              <p style={{ margin: 0, textAlign: 'center', fontSize: 'var(--fs-body-sm)', color: 'var(--text-muted)' }}>
+              <p className="anim-in anim-in-3" style={{ margin: 0, textAlign: 'center', fontSize: 'var(--fs-body-sm)', color: 'var(--text-muted)' }}>
                 Remembered it? <a href="/login" onClick={e => { e.preventDefault(); navigate('/login'); }} style={{ fontWeight: 'var(--fw-semibold)' }}>Back to log in</a>
               </p>
             </React.Fragment>

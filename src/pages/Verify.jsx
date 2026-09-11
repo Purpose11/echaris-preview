@@ -27,7 +27,7 @@ const PROGRESS = ['Details received', 'Checking your document with the verificat
 function StatusCard({ tone, icon, title, body, children }) {
   const ring = { brand: ['var(--orange-50)', 'var(--text-brand)'], success: ['var(--success-50)', 'var(--text-success)'], danger: ['var(--danger-50)', 'var(--text-danger)'] }[tone];
   return (
-    <Card padding={28}>
+    <Card padding={28} className="anim-in anim-in-2">
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start' }}>
         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 52, height: 52, borderRadius: 'var(--radius-pill)', background: ring[0], color: ring[1] }}>
           {icon === 'spinner' ? <span className="spin" /> : <Icon name={icon} size={26} />}
@@ -103,11 +103,11 @@ export default function Verify() {
   let body;
   if (view === 'form') body = (
     <React.Fragment>
-      <div className="head">
+      <div className="head anim-in anim-in-1">
         <h1 className="h1">Complete your identity verification</h1>
         <p className="sub">Verify your identity to unlock full platform access and enjoy a safer ECharis experience.</p>
       </div>
-      <div className="wiz">
+      <div className="wiz anim-in anim-in-2">
         {[['map-pin', 'Residential address'], ['shield-check', 'Identity document']].map(([ic, l], i) => (
           <div className="wiz-s" key={l} data-on={step >= i + 1 ? '1' : '0'}>
             <i></i>
@@ -115,7 +115,7 @@ export default function Verify() {
           </div>
         ))}
       </div>
-      <Card padding={28}>
+      <Card padding={28} className="anim-in anim-in-3">
         <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {step === 1 && <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <SectionHead title="Residential address" sub="Use the address on your utility bill or bank record. This address supports identity verification, product delivery and logistics management." />
@@ -180,7 +180,7 @@ export default function Verify() {
 
   else if (view === 'progress') body = (
     <React.Fragment>
-      <div className="head">
+      <div className="head anim-in anim-in-1">
         <span className="micro">Verification in progress</span>
         <h1 className="h1">Verifying your identity</h1>
         <p className="sub">Keep this page open. The result appears here automatically and your account status updates without further action from you.</p>
@@ -205,7 +205,7 @@ export default function Verify() {
 
   else if (view === 'success') body = (
     <React.Fragment>
-      <div className="head">
+      <div className="head anim-in anim-in-1">
         <span className="micro">Verification complete</span>
         <h1 className="h1">Your identity is verified</h1>
         <p className="sub">Your client account now has full platform access.</p>
@@ -227,7 +227,7 @@ export default function Verify() {
 
   else body = (
     <React.Fragment>
-      <div className="head">
+      <div className="head anim-in anim-in-1">
         <span className="micro">Verification unsuccessful</span>
         <h1 className="h1">We could not verify your identity</h1>
         <p className="sub">Nothing has changed on your account. Review your details and try again.</p>

@@ -4,6 +4,7 @@ import { SiteHeader } from '../design-system/components/navigation/SiteHeader.js
 import { SiteFooter } from '../design-system/components/navigation/SiteFooter.jsx';
 import { Button } from '../design-system/components/core/Button.jsx';
 import { Icon } from '../design-system/components/core/Icon.jsx';
+import { Reveal } from '../components/Reveal.jsx';
 import logoOrange from '../assets/echaris-logo-orange.png';
 import logoWhite from '../assets/echaris-logo-white.png';
 
@@ -75,8 +76,8 @@ export default function About() {
       <section className="ab-hero-band">
         <div className="wrap ab-hero">
           <div className="ab-hero-l">
-            <h1 className="ab-h1">About <span className="ab-em">ECharis</span></h1>
-            <p className="ab-lead">
+            <h1 className="ab-h1 anim-in anim-in-1">About <span className="ab-em">ECharis</span></h1>
+            <p className="ab-lead anim-in anim-in-2">
               A structured digital platform for capital growth, performance tracking, and marketplace financing.
             </p>
           </div>
@@ -85,51 +86,51 @@ export default function About() {
 
       <section className="band" style={{ background: 'var(--surface-card)' }}>
         <div className="wrap" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-          <div className="hw-in">
+          <Reveal as="div" className="hw-in">
             <span className="hw-pill">About us</span>
             <h2 className="hw-h"><span className="hw-em">A registered</span><br />Nigerian growth platform.</h2>
-          </div>
+          </Reveal>
 
-          <div className="wwa">
+          <Reveal as="div" className="wwa" delay={100}>
             <p className="wwa-p">
               ECharis Trading Limited is a Nigerian company registered with the Corporate Affairs Commission under
               RC 9450649. The company operates a digital platform where clients commit trading capital to a growth
               program of three, six or twelve months, follow their performance returns month by month, and direct
               those accumulated returns toward products in the ECharis marketplace.
             </p>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="band-tight" style={{ background: 'var(--surface-page)' }}>
         <div className="wrap mv">
-          <div className="mv-c mv-m">
+          <Reveal as="div" className="mv-c mv-m">
             <span className="mv-ic"><Icon name="target" size={24} /></span>
             <h2 className="mv-t">Our mission</h2>
             <p className="mv-d">
               To give every client a clear, documented route to grow capital and to convert that growth into products
               and outcomes they can use, on terms stated before they commit.
             </p>
-          </div>
-          <div className="mv-c mv-v">
+          </Reveal>
+          <Reveal as="div" className="mv-c mv-v" delay={120}>
             <span className="mv-ic"><Icon name="eye" size={24} /></span>
             <h2 className="mv-t">Our vision</h2>
             <p className="mv-d">
               To be the digital platform Nigerians trust for structured capital growth and marketplace access, judged
               on transparency rather than promises.
             </p>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="band" style={{ background: 'var(--surface-card)' }}>
         <div className="wrap" style={{ display: 'flex', flexDirection: 'column', gap: 44 }}>
-          <div className="hw-in">
+          <Reveal as="div" className="hw-in">
             <span className="hw-pill">What we do</span>
             <h2 className="hw-h"><span className="hw-em">Four services</span><br />on one client account.</h2>
             <p className="hw-lead">Everything a client needs to commit capital, follow returns and finance a product.</p>
-          </div>
-          <div className="svc">
+          </Reveal>
+          <Reveal as="div" className="svc reveal-group" delay={80}>
             {SERVICES.map(([icon, t, d]) => (
               <div className="svc-c" key={t}>
                 <span className="svc-ic"><Icon name={icon} size={22} /></span>
@@ -137,7 +138,7 @@ export default function About() {
                 <p className="svc-d">{d}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Button size="lg" iconRight="arrow-right" onClick={() => go('/services')}>Explore Our Services</Button>
           </div>
@@ -146,11 +147,11 @@ export default function About() {
 
       <section className="band" style={{ background: 'var(--neutral-900)' }}>
         <div className="wrap" style={{ display: 'flex', flexDirection: 'column', gap: 44 }}>
-          <div className="hw-in hw-dark">
+          <Reveal as="div" className="hw-in hw-dark">
             <span className="hw-pill">What we stand for</span>
             <h2 className="hw-h"><span className="hw-em">Six values</span><br />every client account is held to.</h2>
-          </div>
-          <div className="vals">
+          </Reveal>
+          <Reveal as="div" className="vals reveal-group" delay={80}>
             {VALUES.map(([icon, t, d]) => (
               <div className="val-c" key={t}>
                 <Icon name={icon} size={22} />
@@ -158,13 +159,13 @@ export default function About() {
                 <p className="val-d">{d}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="cta-band">
         <div className="wrap">
-          <div className="cta-panel">
+          <Reveal as="div" className="cta-panel">
             <div className="cta-l">
               <h2 className="cta-h">Ready to get started?</h2>
               <p className="cta-p">Create your ECharis client account and explore our capital growth and marketplace financing services.</p>
@@ -175,7 +176,7 @@ export default function About() {
                 <Button size="lg" variant="inverse" onClick={() => go('/services')}>Explore Services</Button>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 

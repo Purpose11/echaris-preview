@@ -9,6 +9,7 @@ import { Badge } from '../design-system/components/core/Badge.jsx';
 import { Input } from '../design-system/components/forms/Input.jsx';
 import { Pagination } from '../design-system/components/navigation/Pagination.jsx';
 import { EmptyState } from '../design-system/components/data/EmptyState.jsx';
+import { Reveal } from '../components/Reveal.jsx';
 import logoOrange from '../assets/echaris-logo-orange.png';
 import logoWhite from '../assets/echaris-logo-white.png';
 import imgIphone from '../assets/marketplace/mp-iphone.webp';
@@ -77,8 +78,8 @@ function ProductDetail({ p, back, reg }) {
       <div className="wrap" style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
         <button type="button" className="back" onClick={back}><Icon name="arrow-left" size={16} />Back to marketplace</button>
         <div className="pd">
-          <div className="pd-img"><img src={IMGS[p.id]} alt={p.name} style={{width:'100%',height:'100%',objectFit:'cover',display:'block',borderRadius:16}} /></div>
-          <div className="pd-b">
+          <div className="pd-img anim-in anim-in-1"><img src={IMGS[p.id]} alt={p.name} style={{width:'100%',height:'100%',objectFit:'cover',display:'block',borderRadius:16}} /></div>
+          <div className="pd-b anim-in anim-in-2">
             <span className="micro">{p.cat}</span>
             <h1 className="h1" style={{ fontSize: 'var(--fs-h1)' }}>{p.name}</h1>
             <div className="pd-v">{NAIRA(p.value)}</div>
@@ -169,8 +170,8 @@ export default function Marketplace() {
       <section className="ab-hero-band">
         <div className="wrap ab-hero">
           <div className="ab-hero-l">
-            <h1 className="ab-h1">The ECharis <span className="ab-em">marketplace</span></h1>
-            <p className="ab-lead">
+            <h1 className="ab-h1 anim-in anim-in-1">The ECharis <span className="ab-em">marketplace</span></h1>
+            <p className="ab-lead anim-in anim-in-2">
               Finance the products you want through a growth program, and take delivery once your performance returns reach the release milestone.
             </p>
           </div>
@@ -181,9 +182,9 @@ export default function Marketplace() {
       <React.Fragment>
       <section className="band" style={{ background: 'var(--surface-card)' }}>
         <div className="wrap" style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
-          <div className="hw-in" style={{ alignItems: 'center', textAlign: 'center' }}>
+          <Reveal as="div" className="hw-in" style={{ alignItems: 'center', textAlign: 'center' }}>
             <h2 className="hw-h"><span className="hw-em">Everything you can</span><br />finance with your returns.</h2>
-          </div>
+          </Reveal>
 
           <div className="mp-tools">
             <div className="mp-search">
@@ -231,9 +232,9 @@ export default function Marketplace() {
           </div>
 
           {rows.length ? (
-            <div className="pgrid">
+            <Reveal as="div" className="pgrid reveal-group" delay={60}>
               {rows.map(p => <ProductCard key={p.id} p={p} open={open} reg={reg} />)}
-            </div>
+            </Reveal>
           ) : (
             <Card padding={0}>
               <EmptyState icon="search-x" title="No products match your search"

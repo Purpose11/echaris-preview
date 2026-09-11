@@ -45,13 +45,13 @@ const BLANK = { first: '', last: '', email: '', dial: '+234', phone: '', passwor
 function Panel() {
   return (
     <aside className="panel">
-      <Logo variant="white" height={26} src={logoWhite} style={{ alignSelf: 'flex-start' }} />
+      <Logo variant="white" height={26} src={logoWhite} style={{ alignSelf: 'flex-start' }} className="anim-in anim-in-1" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 34 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className="anim-in anim-in-2" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <h2 style={{ margin: 0, fontSize: 'var(--fs-h1)', fontWeight: 'var(--fw-extrabold)', letterSpacing: 'var(--ls-display)', lineHeight: 'var(--lh-tight)', color: '#fff', maxWidth: 400 }}>Start your journey with ECharis</h2>
           <p style={{ margin: 0, fontSize: 'var(--fs-body)', color: 'rgba(255,255,255,.66)', lineHeight: 1.6, maxWidth: 420 }}>Create your account and access a secure platform designed to help you manage capital commitments, track performance returns, and explore marketplace opportunities.</p>
         </div>
-        <div className="benefits">
+        <div className="benefits anim-in anim-in-3">
           {BENEFITS.map(([icon, t, d]) => (
             <div className="benefit" key={t}>
               <Icon name={icon} size={20} style={{ color: 'var(--brand-primary)', marginTop: 2, flex: 'none' }} />
@@ -67,7 +67,7 @@ function Panel() {
 
 function Heading({ eyebrow, title, sub }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div className="anim-in anim-in-1" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <span className="micro" style={{ color: 'var(--text-muted)' }}>{eyebrow}</span>
       <h1 style={{ margin: 0, fontSize: 'var(--fs-h1)', fontWeight: 'var(--fw-extrabold)', letterSpacing: 'var(--ls-display)', lineHeight: 'var(--lh-tight)', color: 'var(--text-heading)' }}>{title}</h1>
       <p style={{ margin: 0, fontSize: 'var(--fs-body)', color: 'var(--text-muted)', maxWidth: 460 }}>{sub}</p>
@@ -78,7 +78,7 @@ function Heading({ eyebrow, title, sub }) {
 function StatusCard({ tone, icon, title, body, children }) {
   const ring = { brand: ['var(--orange-50)', 'var(--text-brand)'], success: ['var(--success-50)', 'var(--text-success)'], danger: ['var(--danger-50)', 'var(--text-danger)'] }[tone];
   return (
-    <Card padding={28}>
+    <Card padding={28} className="anim-in anim-in-2">
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start' }}>
         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 52, height: 52, borderRadius: 'var(--radius-pill)', background: ring[0], color: ring[1] }}>
           {icon === 'spinner' ? <span className="spin" /> : <Icon name={icon} size={26} />}
@@ -139,7 +139,7 @@ export default function Register() {
   if (view === 'form' || view === 'sending') body = (
     <React.Fragment>
       <Heading eyebrow="Create account" title="Create your account" sub="Join ECharis and start managing your financial activities from one secure platform." />
-      <Card padding={28}>
+      <Card padding={28} className="anim-in anim-in-2">
         <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           {formError && <Alert tone="danger" title="Account not created">{formError}</Alert>}
           <div className="grid2">
@@ -178,7 +178,7 @@ export default function Register() {
           <Button type="submit" fullWidth size="lg" loading={view === 'sending'}>{view === 'sending' ? 'Creating your account' : 'Create account'}</Button>
         </form>
       </Card>
-      <p style={{ margin: 0, textAlign: 'center', fontSize: 'var(--fs-body-sm)', color: 'var(--text-muted)' }}>Already have an account? <a href="/login" onClick={e => { e.preventDefault(); navigate('/login'); }} style={{ fontWeight: 'var(--fw-semibold)' }}>Login</a></p>
+      <p className="anim-in anim-in-3" style={{ margin: 0, textAlign: 'center', fontSize: 'var(--fs-body-sm)', color: 'var(--text-muted)' }}>Already have an account? <a href="/login" onClick={e => { e.preventDefault(); navigate('/login'); }} style={{ fontWeight: 'var(--fw-semibold)' }}>Login</a></p>
     </React.Fragment>
   );
 

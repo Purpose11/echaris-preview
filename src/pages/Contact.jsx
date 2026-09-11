@@ -9,6 +9,7 @@ import { Avatar } from '../design-system/components/core/Avatar.jsx';
 import { FormField } from '../design-system/components/forms/FormField.jsx';
 import { Input } from '../design-system/components/forms/Input.jsx';
 import { Textarea } from '../design-system/components/forms/Textarea.jsx';
+import { Reveal } from '../components/Reveal.jsx';
 import logoOrange from '../assets/echaris-logo-orange.png';
 import logoWhite from '../assets/echaris-logo-white.png';
 
@@ -62,8 +63,8 @@ export default function Contact() {
       <section className="ab-hero-band">
         <div className="wrap ab-hero">
           <div className="ab-hero-l">
-            <h1 className="ab-h1">Contact <span className="ab-em">ECharis</span></h1>
-            <p className="ab-lead">
+            <h1 className="ab-h1 anim-in anim-in-1">Contact <span className="ab-em">ECharis</span></h1>
+            <p className="ab-lead anim-in anim-in-2">
               Send us a message about your client account, your capital commitments, or anything else on the platform.
             </p>
           </div>
@@ -71,7 +72,7 @@ export default function Contact() {
       </section>
 
       <section className="band" style={{ background: 'var(--surface-card)' }}>
-        <div className="wrap ct">
+        <Reveal as="div" className="wrap ct">
           <Card padding={40} className="cf-card">
             {sent ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 18, alignItems: 'flex-start' }}>
@@ -124,12 +125,12 @@ export default function Contact() {
           </Card>
 
 
-        </div>
+        </Reveal>
       </section>
 
       <section className="band-tight" style={{ background: 'var(--surface-card)', paddingTop: 0 }}>
         <div className="wrap">
-          <div className="wa">
+          <Reveal as="div" className="wa">
             <div className="wa-l">
               <h2 className="wa-h">Contact us on WhatsApp</h2>
               <p className="wa-p">For payment issues, KYC and compliance, fraud suspicions and technical help contact us below</p>
@@ -155,13 +156,13 @@ export default function Contact() {
                 </div>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="band-tight" style={{ background: 'var(--surface-card)', paddingTop: 0 }}>
         <div className="wrap ct-reach">
-            <div className="ct-panel">
+            <Reveal as="div" className="ct-panel">
               <span className="cf-eyebrow">Reach us directly</span>
 
               <div className="ct-rows">
@@ -183,7 +184,7 @@ export default function Contact() {
                   <Icon name="arrow-up-right" size={16} />
                 </a>
               </div>
-            </div>
+            </Reveal>
         </div>
       </section>
 
