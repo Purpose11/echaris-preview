@@ -1,0 +1,43 @@
+/*
+  shadcn / Tailwind CSS v4 scaffold.
+  Imported AFTER index.css in main so existing echaris tokens always win.
+  Preflight is deliberately omitted — only theme + utilities layers are loaded.
+*/
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Minimal shadcn CSS-variable bridge.
+  Values reference the echaris design-system tokens so there's zero drift.
+  We only declare the handful that shadcn components actually read;
+  echaris's :root block is the single source of truth for everything else.
+*/
+@theme inline {
+  --color-background: var(--surface-page);
+  --color-foreground: var(--text-body);
+  --color-card: var(--surface-card);
+  --color-card-foreground: var(--text-heading);
+  --color-popover: var(--surface-card);
+  --color-popover-foreground: var(--text-heading);
+  --color-primary: var(--brand-primary);
+  --color-primary-foreground: var(--text-on-brand);
+  --color-secondary: var(--neutral-100);
+  --color-secondary-foreground: var(--text-heading);
+  --color-muted: var(--neutral-100);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--neutral-100);
+  --color-accent-foreground: var(--text-heading);
+  --color-destructive: var(--danger-500);
+  --color-destructive-foreground: var(--neutral-0);
+  --color-border: var(--border-default);
+  --color-input: var(--border-default);
+  --color-ring: var(--brand-primary);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+}

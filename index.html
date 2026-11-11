@@ -9,14 +9,14 @@
     <script>
       (function () {
         try {
-          var t = localStorage.getItem('echaris-theme');
-          if (t) document.documentElement.setAttribute('data-theme', t);
+          var t = localStorage.getItem("echaris-theme");
+          if (t) document.documentElement.setAttribute("data-theme", t);
         } catch (e) {}
       })();
     </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
