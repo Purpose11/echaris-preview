@@ -1,18 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type ChangeEvent, type ReactNode, useState } from "react";
+import { type ChangeEvent, type ReactNode, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import OTPInput from "react-otp-input";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import {
+  useLoginCustomer,
   useRegisterCustomer,
   useResendCustomerOtp,
   useVerifyCustomerOtp,
 } from "@/api/customer/hooks";
-import type { CustomerProfile } from "@/api/customer/types";
 import logoOrange from "@/assets/echaris-logo-orange.png";
-import logoWhite from "@/assets/echaris-logo-white.png";
-import { Badge } from "@/design-system/components/core/Badge.jsx";
 import { Button } from "@/design-system/components/core/Button.jsx";
 import { Card } from "@/design-system/components/core/Card.jsx";
 import { Icon } from "@/design-system/components/core/Icon.jsx";
@@ -76,19 +75,12 @@ function passwordScore(p: string) {
   return Math.min(4, s);
 }
 
-type View = "form" | "otp" | "verified";
+type View = "form" | "otp";
 
 function Panel() {
   return (
     <aside className="panel">
-      <Logo
-        variant="white"
-        height={26}
-        src={logoWhite}
-        style={{ alignSelf: "flex-start" }}
-        className="anim-in anim-in-1"
-      />
-      <div style={{ display: "flex", flexDirection: "column", gap: 34 }}>
+      <div className="panel-inner anim-in anim-in-1">
         <div
           className="anim-in anim-in-2"
           style={{ display: "flex", flexDirection: "column", gap: 14 }}
@@ -101,7 +93,6 @@ function Panel() {
               letterSpacing: "var(--ls-display)",
               lineHeight: "var(--lh-tight)",
               color: "#fff",
-              maxWidth: 400,
             }}
           >
             Start your journey with ECharis
@@ -112,7 +103,6 @@ function Panel() {
               fontSize: "var(--fs-body)",
               color: "rgba(255,255,255,.66)",
               lineHeight: 1.6,
-              maxWidth: 420,
             }}
           >
             Create your account and access a secure platform designed to help you manage
@@ -136,15 +126,6 @@ function Panel() {
           ))}
         </div>
       </div>
-      <p
-        style={{
-          margin: 0,
-          fontSize: "var(--fs-caption)",
-          color: "rgba(255,255,255,.45)",
-        }}
-      >
-        Echaris Trading Limited · CAC registered · RC 9450649
-      </p>
     </aside>
   );
 }
@@ -273,13 +254,22 @@ export default function Register() {
   const [view, setView] = useState<View>("form");
   const [showPassword, setShowPassword] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
-  const [registeredFirstName, setRegisteredFirstName] = useState("");
-  const [verifiedCustomer, setVerifiedCustomer] = useState<CustomerProfile | null>(null);
+  const [registeredPassword, setRegisteredPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   const registerMutation = useRegisterCustomer();
   const verifyMutation = useVerifyCustomerOtp();
   const resendMutation = useResendCustomerOtp();
+  const loginMutation = useLoginCustomer();
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const id = window.setTimeout(() => {
+      setResendCooldown((s) => Math.max(0, s - 1));
+    }, 1000);
+    return () => window.clearTimeout(id);
+  }, [resendCooldown]);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerFormSchema),
@@ -313,8 +303,9 @@ export default function Register() {
         return;
       }
       setRegisteredEmail(values.emailAddress.trim());
-      setRegisteredFirstName(values.firstName.trim());
+      setRegisteredPassword(values.password);
       otpForm.reset({ otp: "" });
+      setResendCooldown(30);
       setView("otp");
       toast.success(res.message || "Check your email for the verification OTP");
     } catch (error) {
@@ -332,19 +323,35 @@ export default function Register() {
         otpForm.setError("otp", { message: res.message || "Invalid code." });
         return;
       }
-      setVerifiedCustomer(res.data);
-      setView("verified");
-      toast.success(res.message || "Customer account verified successfully");
+
+      const loginRes = await loginMutation.mutateAsync({
+        emailAddress: registeredEmail,
+        password: registeredPassword,
+      });
+      if (loginRes.success === false || !loginRes.data) {
+        toast.success(res.message || "Account verified. Please log in.");
+        navigate("/login", { replace: true, state: { email: registeredEmail } });
+        return;
+      }
+
+      toast.success(res.message || "Account verified successfully");
+      navigate("/verify", { replace: true });
     } catch (error) {
       otpForm.setError("otp", { message: normalizeError(error) });
     }
   });
 
   const onResendOtp = async () => {
-    await resendMutation.mutateAsync({
-      emailAddress: registeredEmail,
-      userOtpType: "ACCOUNT_ACTIVATION",
-    });
+    if (resendCooldown > 0 || resendMutation.isPending) return;
+    try {
+      await resendMutation.mutateAsync({
+        emailAddress: registeredEmail,
+        userOtpType: "ACCOUNT_ACTIVATION",
+      });
+      setResendCooldown(30);
+    } catch {
+      /* toast handled in mutation onError */
+    }
   };
 
   const eye = (
@@ -667,23 +674,39 @@ export default function Register() {
               render={({ field, fieldState }) => (
                 <FormField
                   label="Verification code"
-                  htmlFor="otp"
+                  htmlFor="otp-0"
                   error={fieldState.error?.message}
                 >
-                  <Input
-                    id="otp"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    placeholder="6-digit code"
-                    invalid={!!fieldState.error}
-                    maxLength={6}
-                    {...field}
+                  <OTPInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    numInputs={6}
+                    shouldAutoFocus
+                    inputType="tel"
+                    skipDefaultStyles
+                    containerStyle="otp-boxes"
+                    renderInput={(props, index) => (
+                      <input
+                        {...props}
+                        id={index === 0 ? "otp-0" : undefined}
+                        className={`otp-box${fieldState.error ? "otp-box--invalid" : ""}`}
+                        inputMode="numeric"
+                        autoComplete={index === 0 ? "one-time-code" : "off"}
+                      />
+                    )}
                   />
                 </FormField>
               )}
             />
-            <Button type="submit" fullWidth size="lg" loading={verifyMutation.isPending}>
-              {verifyMutation.isPending ? "Verifying" : "Verify email"}
+            <Button
+              type="submit"
+              fullWidth
+              size="lg"
+              loading={verifyMutation.isPending || loginMutation.isPending}
+            >
+              {verifyMutation.isPending || loginMutation.isPending
+                ? "Verifying"
+                : "Verify email"}
             </Button>
           </form>
 
@@ -702,106 +725,14 @@ export default function Register() {
             iconLeft="refresh-cw"
             onClick={onResendOtp}
             loading={resendMutation.isPending}
-            disabled={resendMutation.isPending}
+            disabled={resendMutation.isPending || resendCooldown > 0}
           >
-            {resendMutation.isPending ? "Sending" : "Resend verification code"}
+            {resendMutation.isPending
+              ? "Sending"
+              : resendCooldown > 0
+                ? `Resend in ${resendCooldown}s`
+                : "Resend verification code"}
           </Button>
-        </StatusCard>
-      </>
-    );
-  } else {
-    const first = verifiedCustomer?.firstName || registeredFirstName || "there";
-    const customerNumber = verifiedCustomer?.customerNumber;
-
-    body = (
-      <>
-        <Heading
-          eyebrow="Account ready"
-          title="Account created successfully"
-          sub="Your email is confirmed and your client account is open."
-        />
-        <StatusCard
-          tone="success"
-          icon="circle-check"
-          title={`Welcome to Echaris, ${first}.`}
-          body="Log in to explore growth programs and the marketplace. Identity verification is required before your first capital commitment."
-        >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 16,
-              width: "100%",
-              padding: "18px 0",
-              borderTop: "1px solid var(--border-subtle)",
-              borderBottom: "1px solid var(--border-subtle)",
-            }}
-          >
-            <div>
-              <div className="micro">Client reference</div>
-              <div
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "var(--fs-body-sm)",
-                  color: "var(--text-heading)",
-                  marginTop: 4,
-                }}
-              >
-                {customerNumber || "—"}
-              </div>
-            </div>
-            <div>
-              <div className="micro">Email</div>
-              <div style={{ marginTop: 4 }}>
-                <Badge tone="success" icon="check">
-                  Confirmed
-                </Badge>
-              </div>
-            </div>
-            <div>
-              <div className="micro">Opened</div>
-              <div
-                style={{
-                  fontSize: "var(--fs-body-sm)",
-                  fontWeight: "var(--fw-semibold)",
-                  color: "var(--text-heading)",
-                  marginTop: 4,
-                }}
-              >
-                {new Date().toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </div>
-            </div>
-            <div>
-              <div className="micro">Identity</div>
-              <div style={{ marginTop: 4 }}>
-                <Badge tone="warning">Not verified</Badge>
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-              width: "100%",
-            }}
-          >
-            <Button
-              fullWidth
-              size="lg"
-              iconRight="arrow-right"
-              onClick={() => navigate("/login", { state: { email: registeredEmail } })}
-            >
-              Log in to continue
-            </Button>
-            <Button fullWidth size="lg" variant="ghost" onClick={() => navigate("/")}>
-              Back to home
-            </Button>
-          </div>
         </StatusCard>
       </>
     );
@@ -822,43 +753,6 @@ export default function Register() {
           <Logo height={26} src={logoOrange} />
         </a>
         <div className="col">{body}</div>
-        <footer
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 20,
-            fontSize: "var(--fs-caption)",
-            color: "var(--text-subtle)",
-          }}
-        >
-          <a
-            href="#"
-            onClick={(e) => e.preventDefault()}
-            style={{ color: "var(--text-muted)" }}
-          >
-            Terms &amp; conditions
-          </a>
-          <a
-            href="#"
-            onClick={(e) => e.preventDefault()}
-            style={{ color: "var(--text-muted)" }}
-          >
-            Privacy policy
-          </a>
-          <a
-            href="/contact"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/contact");
-            }}
-            style={{ color: "var(--text-muted)" }}
-          >
-            Contact support
-          </a>
-          <span>© 2026 Echaris Trading Limited</span>
-        </footer>
       </main>
     </div>
   );

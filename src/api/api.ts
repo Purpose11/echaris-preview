@@ -39,7 +39,6 @@ function logoutForSession() {
 function createApi(baseURL: string): AxiosInstance {
   const instance = axios.create({
     baseURL,
-    timeout: 50_000,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

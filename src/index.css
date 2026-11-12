@@ -4377,7 +4377,9 @@ body {
 .auth {
   display: grid;
   grid-template-columns: 0.95fr 1.05fr;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
 }
 .panel {
   background: var(--neutral-900);
@@ -4385,8 +4387,21 @@ body {
   padding: 64px 56px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 48px;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+}
+.panel-inner {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 .trust {
   display: flex;
@@ -4444,6 +4459,8 @@ body {
 @media (max-width: 1000px) {
   .auth {
     grid-template-columns: 1fr;
+    height: 100vh;
+    height: 100dvh;
   }
   .panel {
     display: none;
@@ -4498,7 +4515,9 @@ body.mobile main {
 .auth.auth--wide {
   display: grid;
   grid-template-columns: 0.85fr 1.15fr;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
 }
 .benefits {
   display: flex;
@@ -4547,9 +4566,30 @@ body.mobile main {
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 40px 48px 32px;
-  gap: 36px;
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.main > a:first-child {
+  flex: none;
+  margin-bottom: 28px;
+}
+.main > .col,
+.main > div:last-of-type {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 22px;
 }
 .col {
   width: 100%;
@@ -4616,6 +4656,8 @@ body.mobile main {
 @media (max-width: 1040px) {
   .auth.auth--wide {
     grid-template-columns: 1fr;
+    height: 100vh;
+    height: 100dvh;
   }
   .panel {
     display: none;
@@ -5132,5 +5174,51 @@ a {
     gap: 8px !important;
     margin-top: 36px !important;
     padding-top: 20px !important;
+  }
+}
+
+/* OTP digit boxes (email verification) */
+.otp-boxes {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: space-between;
+}
+.otp-box {
+  width: 48px !important;
+  height: 52px !important;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-bold);
+  color: var(--text-heading);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: var(--transition-control);
+  caret-color: var(--brand-primary);
+}
+.otp-box:hover {
+  border-color: var(--border-strong);
+}
+.otp-box:focus {
+  border-color: var(--border-focus);
+  box-shadow: var(--focus-ring);
+}
+.otp-box.otp-box--invalid {
+  border-color: var(--border-danger);
+}
+.otp-box.otp-box--invalid:focus {
+  box-shadow: 0 0 0 3px rgba(217, 45, 32, 0.22);
+}
+@media (max-width: 420px) {
+  .otp-boxes {
+    gap: 6px;
+  }
+  .otp-box {
+    width: 42px !important;
+    height: 48px !important;
+    font-size: var(--fs-h4);
   }
 }

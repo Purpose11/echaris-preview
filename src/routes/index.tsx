@@ -11,14 +11,14 @@ import AdminPlaceholder from "@/pages/Admin/Placeholder";
 import Contact from "@/pages/Contact.jsx";
 import DashboardOverview from "@/pages/Dashboard/Overview";
 import DashboardPlaceholder from "@/pages/Dashboard/Placeholder";
-import ForgotPassword from "@/pages/ForgotPassword.jsx";
+import ForgotPassword from "@/pages/ForgotPassword";
 import Home from "@/pages/Home.jsx";
-import Login from "@/pages/Login.jsx";
+import Login from "@/pages/Login";
 import Marketplace from "@/pages/Marketplace.jsx";
 import NotFound from "@/pages/NotFound";
 import Register from "@/pages/Register";
 import Services from "@/pages/Services.jsx";
-import Verify from "@/pages/Verify.jsx";
+import Verify from "@/pages/Verify";
 
 export const appRoutes: RouteObject[] = [
   /* Client auth — no UserLayout */

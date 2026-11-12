@@ -170,3 +170,41 @@ declare module "@/design-system/components/forms/Checkbox.jsx" {
     }
   >;
 }
+
+declare module "@/design-system/components/forms/Radio.jsx" {
+  import type { ComponentType, CSSProperties, InputHTMLAttributes } from "react";
+
+  export const Radio: ComponentType<
+    Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
+      label?: string;
+      description?: string;
+      style?: CSSProperties;
+    }
+  >;
+}
+
+declare module "@/design-system/components/forms/FileUpload.jsx" {
+  import type { ComponentType, CSSProperties, InputHTMLAttributes } from "react";
+
+  export const FileUpload: ComponentType<
+    Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "onChange"> & {
+      label?: string;
+      hint?: string;
+      fileName?: string;
+      invalid?: boolean;
+      onFileChange?: (file: File | undefined) => void;
+      style?: CSSProperties;
+    }
+  >;
+}
+
+declare module "@/design-system/components/data/ProgressMeter.jsx" {
+  import type { ComponentType, CSSProperties } from "react";
+
+  export const ProgressMeter: ComponentType<{
+    value?: number;
+    label?: string;
+    valueLabel?: string;
+    style?: CSSProperties;
+  }>;
+}

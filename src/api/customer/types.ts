@@ -47,3 +47,64 @@ export interface ResendOtpRequest {
   emailAddress: string;
   userOtpType: UserOtpType;
 }
+
+export interface CustomerLoginRequest {
+  emailAddress: string;
+  password: string;
+}
+
+export interface CustomerLoginData {
+  accessToken: string;
+  refreshToken: string;
+  customer: CustomerProfile;
+}
+
+export interface ForgotPasswordRequest {
+  emailAddress: string;
+}
+
+export interface ForgotPasswordData {
+  userId: string;
+  emailAddress: string;
+  otpExpiresAt: string;
+}
+
+export interface ResetPasswordRequest {
+  emailAddress: string;
+  otp: string;
+  newPassword: string;
+}
+
+export type KycDocumentType = "NIN" | "DRIVERS_LICENSE" | "INTERNATIONAL_PASSPORT";
+
+export type KycReviewStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export interface SubmitKycRequest {
+  documentType: KycDocumentType;
+  documentNumber: string;
+  frontViewUrl: string;
+  backViewUrl: string;
+}
+
+export interface KycDocument {
+  documentType: KycDocumentType;
+  documentNumber: string;
+  frontViewUrl: string;
+  backViewUrl: string;
+  submittedAt: string;
+  submissionVersion: number;
+  approved: boolean;
+  approvedAt: string | null;
+  approvedBy: string | null;
+  rejectedAt: string | null;
+  rejectedBy: string | null;
+  rejectionReason: string | null;
+  reviewStatus: KycReviewStatus;
+}
+
+export interface CustomerKycData {
+  customerId: string;
+  doneKyc: boolean;
+  kycAccepted: boolean;
+  kycDocuments: KycDocument[];
+}
