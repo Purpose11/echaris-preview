@@ -5366,6 +5366,7 @@ a {
   overflow: hidden;
 }
 
+.user-sidebar a.user-sidebar__link,
 .user-sidebar__link {
   display: flex;
   align-items: center;
@@ -5382,6 +5383,11 @@ a {
     color 160ms ease;
 }
 
+.user-sidebar a.user-sidebar__link:hover,
+.user-sidebar a.user-sidebar__link:focus,
+.user-sidebar a.user-sidebar__link:focus-visible,
+.user-sidebar a.user-sidebar__link:active,
+.user-sidebar a.user-sidebar__link.is-active,
 .user-sidebar__link:hover,
 .user-sidebar__link:focus,
 .user-sidebar__link:focus-visible,
@@ -5390,15 +5396,32 @@ a {
   text-decoration: none;
 }
 
+.user-sidebar a.user-sidebar__link:hover,
 .user-sidebar__link:hover {
   background: var(--user-sidebar-hover);
   color: var(--user-sidebar-text-strong);
 }
 
+.user-sidebar a.user-sidebar__link.is-active,
 .user-sidebar__link.is-active {
   background: var(--user-sidebar-active-bg);
   color: var(--user-sidebar-text-strong);
   font-weight: 600;
+}
+
+.user-sidebar__icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.user-sidebar__label {
+  min-width: 0;
+  line-height: 1.3;
 }
 
 .user-sidebar__footer {

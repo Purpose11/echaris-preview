@@ -45,7 +45,7 @@ export default function UserLayout() {
           )}
 
           <div
-            className={`user-shell__drawer${mobileOpen ? "is-open" : ""}`}
+            className={mobileOpen ? "user-shell__drawer is-open" : "user-shell__drawer"}
             aria-hidden={!mobileOpen}
           >
             <UserSidebar

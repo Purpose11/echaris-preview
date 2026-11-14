@@ -4,6 +4,7 @@ import logoWhite from "@/assets/echaris-logo-white.png";
 import { Avatar } from "@/design-system/components/core/Avatar.jsx";
 import { Icon } from "@/design-system/components/core/Icon.jsx";
 import { Logo } from "@/design-system/components/core/Logo.jsx";
+import { cn } from "@/lib/utils";
 import { Adminlogout, getAdminRole, getLoggedInUser } from "@/utils/authHelper";
 import { type AdminRole, getNavItemsForRole } from "@/utils/roleAccess";
 
@@ -56,11 +57,11 @@ export function AdminSidebar({ onNavigate, onClose }: AdminSidebarProps) {
             end={item.path === "/admin"}
             onClick={onNavigate}
             className={({ isActive }) =>
-              `user-sidebar__link${isActive ? "is-active" : ""}`
+              cn("user-sidebar__link", isActive && "is-active")
             }
           >
-            <Icon name={item.icon} size={18} />
-            <span>{item.label}</span>
+            <Icon name={item.icon} size={18} className="user-sidebar__icon" />
+            <span className="user-sidebar__label">{item.label}</span>
           </NavLink>
         ))}
       </nav>
