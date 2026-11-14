@@ -3,7 +3,15 @@ import type { StoredUser } from "@/utils/authHelper";
 /* ---- Admin features ---- */
 
 export type AdminFeature =
-  "overview" | "users" | "products" | "orders" | "settings" | "reports";
+  | "overview"
+  | "customers"
+  | "kyc"
+  | "products"
+  | "commitments"
+  | "payments"
+  | "marketplace"
+  | "admins"
+  | "settings";
 
 export type AdminRole = Extract<StoredUser["userType"], "ADMIN" | "SUPER_ADMIN">;
 
@@ -11,28 +19,64 @@ export interface NavItem {
   label: string;
   path: string;
   feature: AdminFeature;
+  icon: string;
 }
 
 export const ROLE_FEATURES: Record<AdminRole, readonly AdminFeature[]> = {
-  SUPER_ADMIN: ["overview", "users", "products", "orders", "settings", "reports"],
-  ADMIN: ["overview", "products", "orders"],
+  SUPER_ADMIN: [
+    "overview",
+    "customers",
+    "kyc",
+    "products",
+    "commitments",
+    "payments",
+    "marketplace",
+    "admins",
+    "settings",
+  ],
+  ADMIN: [
+    "overview",
+    "customers",
+    "kyc",
+    "products",
+    "commitments",
+    "payments",
+    "marketplace",
+    "settings",
+  ],
 };
 
 export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
-  { label: "Overview", path: "/admin", feature: "overview" },
-  { label: "Users", path: "/admin/users", feature: "users" },
-  { label: "Products", path: "/admin/products", feature: "products" },
-  { label: "Orders", path: "/admin/orders", feature: "orders" },
-  { label: "Reports", path: "/admin/reports", feature: "reports" },
-  { label: "Settings", path: "/admin/settings", feature: "settings" },
+  { label: "Overview", path: "/admin", feature: "overview", icon: "layout-grid" },
+  { label: "Customers", path: "/admin/customers", feature: "customers", icon: "users" },
+  { label: "KYC review", path: "/admin/kyc", feature: "kyc", icon: "id-card" },
+  { label: "Products", path: "/admin/products", feature: "products", icon: "inbox" },
+  {
+    label: "Commitments",
+    path: "/admin/commitments",
+    feature: "commitments",
+    icon: "trending-up",
+  },
+  { label: "Payments", path: "/admin/payments", feature: "payments", icon: "wallet" },
+  {
+    label: "Marketplace",
+    path: "/admin/marketplace",
+    feature: "marketplace",
+    icon: "store",
+  },
+  { label: "Admins", path: "/admin/admins", feature: "admins", icon: "shield-check" },
+  { label: "Settings", path: "/admin/settings", feature: "settings", icon: "settings" },
 ];
 
 /** Longest / most-specific rules first */
 export const PATH_FEATURE_RULES: Array<{ pattern: RegExp; feature: AdminFeature }> = [
-  { pattern: /^\/admin\/users(\/|$)/, feature: "users" },
+  { pattern: /^\/admin\/customers(\/|$)/, feature: "customers" },
+  { pattern: /^\/admin\/kyc(\/|$)/, feature: "kyc" },
   { pattern: /^\/admin\/products(\/|$)/, feature: "products" },
-  { pattern: /^\/admin\/orders(\/|$)/, feature: "orders" },
-  { pattern: /^\/admin\/reports(\/|$)/, feature: "reports" },
+  { pattern: /^\/admin\/commitments(\/|$)/, feature: "commitments" },
+  { pattern: /^\/admin\/payments(\/|$)/, feature: "payments" },
+  { pattern: /^\/admin\/marketplace(\/|$)/, feature: "marketplace" },
+  { pattern: /^\/admin\/admins(\/|$)/, feature: "admins" },
   { pattern: /^\/admin\/settings(\/|$)/, feature: "settings" },
   { pattern: /^\/admin\/?$/, feature: "overview" },
 ];

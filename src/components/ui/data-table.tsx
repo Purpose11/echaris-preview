@@ -97,67 +97,73 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn("w-full min-w-0", className)}>
       <div className="overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-card)]">
-        <Table className="border-separate border-spacing-0">
-          <TableHeader className={cn(darkHeader && "bg-[#1a1a1a] [&_tr]:border-0")}>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup.id}
-                className={cn(
-                  "border-0 hover:bg-transparent data-[state=selected]:bg-transparent",
-                  darkHeader && "bg-[#1a1a1a]",
-                )}
-              >
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className={cn(
-                      "h-11 border-0 px-4 text-[11px] font-semibold tracking-[0.06em] uppercase shadow-none",
-                      darkHeader ? "bg-[#1a1a1a] text-white" : "text-[var(--text-muted)]",
-                    )}
-                    style={{
-                      width: header.getSize() !== 150 ? header.getSize() : undefined,
-                    }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
+        <div className="w-full overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]">
+          <Table className="min-w-[640px] border-separate border-spacing-0">
+            <TableHeader className={cn(darkHeader && "bg-[#1a1a1a] [&_tr]:border-0")}>
+              {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="border-[var(--border-subtle)] hover:bg-[var(--neutral-50)]"
+                  key={headerGroup.id}
+                  className={cn(
+                    "border-0 hover:bg-transparent data-[state=selected]:bg-transparent",
+                    darkHeader && "bg-[#1a1a1a]",
+                  )}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-4 py-3.5 text-sm">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      className={cn(
+                        "h-11 border-0 px-3 text-[11px] font-semibold tracking-[0.06em] uppercase shadow-none sm:px-4",
+                        darkHeader
+                          ? "bg-[#1a1a1a] text-white"
+                          : "text-[var(--text-muted)]",
+                      )}
+                      style={{
+                        width: header.getSize() !== 150 ? header.getSize() : undefined,
+                      }}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-32 px-4 py-10 text-center text-sm text-[var(--text-muted)]"
-                >
-                  {emptyMessage}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="border-[var(--border-subtle)] hover:bg-[var(--neutral-50)]"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="px-3 py-3.5 text-sm sm:px-4">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow className="hover:bg-transparent">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-32 px-4 py-10 text-center text-sm text-[var(--text-muted)]"
+                  >
+                    {emptyMessage}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
-      {showPagination ? <DataTablePagination table={table} /> : null}
+      {showPagination ? (
+        <DataTablePagination table={table} className="justify-center sm:justify-end" />
+      ) : null}
     </div>
   );
 }

@@ -5576,3 +5576,39 @@ a {
     padding: 20px 16px 36px;
   }
 }
+
+/* Admin shell overrides — do not alter client `.user-shell` defaults above */
+.admin-shell .user-sidebar__nav {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.admin-shell .user-mobile-header {
+  min-height: 56px;
+  height: calc(56px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+@media (max-width: 480px) {
+  .admin-shell .user-sidebar {
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  }
+
+  .admin-shell .user-shell__content {
+    padding-bottom: max(36px, calc(24px + env(safe-area-inset-bottom, 0px)));
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 24px 16px 28px;
+    padding-bottom: max(28px, calc(16px + env(safe-area-inset-bottom, 0px)));
+  }
+
+  .main > a:first-child {
+    margin-bottom: 20px;
+  }
+}

@@ -4,10 +4,18 @@ import AdminLayout from "@/layouts/AdminLayout";
 import MainLayout from "@/layouts/MainLayout";
 import UserLayout from "@/layouts/UserLayout";
 import About from "@/pages/About.jsx";
+import AdminAdmins from "@/pages/Admin/Admins";
+import AdminCommitments from "@/pages/Admin/Commitments";
+import AdminCustomerDetail from "@/pages/Admin/CustomerDetail";
+import AdminCustomers from "@/pages/Admin/Customers";
 import AdminForgotPassword from "@/pages/Admin/ForgotPassword";
+import AdminKyc from "@/pages/Admin/Kyc";
 import AdminLogin from "@/pages/Admin/Login";
+import AdminMarketplace from "@/pages/Admin/Marketplace";
 import AdminOverview from "@/pages/Admin/Overview";
-import AdminPlaceholder from "@/pages/Admin/Placeholder";
+import AdminPayments from "@/pages/Admin/Payments";
+import AdminProducts from "@/pages/Admin/Products";
+import AdminSettings from "@/pages/Admin/Settings";
 import Contact from "@/pages/Contact.jsx";
 import CommitmentDetails from "@/pages/Dashboard/CommitmentDetails";
 import DashboardCommitments from "@/pages/Dashboard/Commitments";
@@ -49,18 +57,15 @@ export const appRoutes: RouteObject[] = [
     element: <AdminLayout />,
     children: [
       { index: true, element: <AdminOverview /> },
-      { path: "users", element: <AdminPlaceholder /> },
-      { path: "users/new", element: <AdminPlaceholder /> },
-      { path: "users/:id/edit", element: <AdminPlaceholder /> },
-      { path: "users/:id", element: <AdminPlaceholder /> },
-      { path: "products", element: <AdminPlaceholder /> },
-      { path: "products/new", element: <AdminPlaceholder /> },
-      { path: "products/:id/edit", element: <AdminPlaceholder /> },
-      { path: "products/:id", element: <AdminPlaceholder /> },
-      { path: "orders", element: <AdminPlaceholder /> },
-      { path: "orders/:id", element: <AdminPlaceholder /> },
-      { path: "reports", element: <AdminPlaceholder /> },
-      { path: "settings", element: <AdminPlaceholder /> },
+      { path: "customers", element: <AdminCustomers /> },
+      { path: "customers/:customerId", element: <AdminCustomerDetail /> },
+      { path: "kyc", element: <AdminKyc /> },
+      { path: "products", element: <AdminProducts /> },
+      { path: "commitments", element: <AdminCommitments /> },
+      { path: "payments", element: <AdminPayments /> },
+      { path: "marketplace", element: <AdminMarketplace /> },
+      { path: "admins", element: <AdminAdmins /> },
+      { path: "settings", element: <AdminSettings /> },
       { path: "*", element: <NotFound variant="admin" /> },
     ],
   },
