@@ -121,15 +121,18 @@ export default function Login() {
         return;
       }
       toast.success(res.message || "Customer login successful");
-      const from = (location.state as { from?: { pathname?: string } | string } | null)
-        ?.from;
+      const from = (
+        location.state as {
+          from?: { pathname?: string; search?: string } | string;
+        } | null
+      )?.from;
       const fromPath =
         typeof from === "string"
           ? from
           : from && typeof from === "object"
-            ? from.pathname
+            ? `${from.pathname || ""}${from.search || ""}`
             : undefined;
-      const nextPath = await resolvePostAuthPath();
+      const nextPath = resolvePostAuthPath();
       if (nextPath === "/dashboard" && fromPath?.startsWith("/dashboard")) {
         navigate(fromPath, { replace: true });
       } else {

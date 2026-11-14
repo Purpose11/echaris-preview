@@ -1,14 +1,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import imgAc from "../assets/marketplace/mp-ac.webp";
-import imgFridge from "../assets/marketplace/mp-fridge.webp";
-import imgGen from "../assets/marketplace/mp-gen.webp";
-import imgIphone from "../assets/marketplace/mp-iphone.webp";
-import imgMbair from "../assets/marketplace/mp-mbair.webp";
-import imgSofa from "../assets/marketplace/mp-sofa.webp";
-import imgTv from "../assets/marketplace/mp-tv.webp";
-import imgWasher from "../assets/marketplace/mp-washer.webp";
+import { useCatalogCategories, useCatalogProducts } from "@/api/products/hooks";
+import { normalizeCategoryList } from "@/api/products/products";
+import {
+  formatProductPrice,
+  isProductFinancable,
+  mapProductStockLabel,
+  productCategoryLabel,
+  productPrimaryImage,
+} from "@/lib/products";
+import { isAuthenticated } from "@/utils/authHelper";
+import { normalizeError } from "@/utils/normalizeError";
+
 import { Reveal } from "../components/Reveal.jsx";
 import { Badge } from "../design-system/components/core/Badge.jsx";
 import { Button } from "../design-system/components/core/Button.jsx";
@@ -18,130 +22,87 @@ import { EmptyState } from "../design-system/components/data/EmptyState.jsx";
 import { Input } from "../design-system/components/forms/Input.jsx";
 import { Pagination } from "../design-system/components/navigation/Pagination.jsx";
 
-const IMGS = {
-  iphone: imgIphone,
-  mbair: imgMbair,
-  tv: imgTv,
-  fridge: imgFridge,
-  washer: imgWasher,
-  gen: imgGen,
-  ac: imgAc,
-  sofa: imgSofa,
-};
-
 const SIZE = 7;
-
-const NAIRA = (n) => "₦" + n.toLocaleString("en-NG");
-
-const PRODUCTS = [
-  {
-    id: "iphone",
-    name: "iPhone 16 Pro",
-    cat: "Phones",
-    value: 1200000,
-    stock: "In stock",
-    lead: "3–5 working days",
-    desc: "6.3-inch Super Retina XDR display, A18 Pro chip and a 48MP fusion camera system. Titanium frame, USB-C, and all-day battery. Supplied unlocked with a one-year manufacturer warranty.",
-  },
-  {
-    id: "mbair",
-    name: "MacBook Air M4",
-    cat: "Laptops",
-    value: 1650000,
-    stock: "In stock",
-    lead: "3–5 working days",
-    desc: "13-inch Liquid Retina display with the M4 chip, 16GB unified memory and 512GB SSD. Fanless design, up to 18 hours of battery, and a 1080p camera. Includes charger and one-year warranty.",
-  },
-  {
-    id: "tv",
-    name: 'Samsung 65" QLED smart TV',
-    cat: "Electronics",
-    value: 1150000,
-    stock: "In stock",
-    lead: "3–5 working days",
-    desc: "65-inch QLED 4K display with Quantum HDR, Motion Xcelerator and built-in smart apps. Slim bezel with a wall-mount kit and remote in the box. Two-year manufacturer warranty.",
-  },
-  {
-    id: "fridge",
-    name: "LG double-door refrigerator",
-    cat: "Appliances",
-    value: 890000,
-    stock: "Low stock",
-    lead: "5–7 working days",
-    desc: "530-litre double-door refrigerator with inverter linear compressor, multi-air flow cooling and a door-cooling vent. Energy efficient and stabiliser free. Two-year warranty on parts, ten on the compressor.",
-  },
-  {
-    id: "washer",
-    name: "Bosch 9kg front-load washing machine",
-    cat: "Appliances",
-    value: 980000,
-    stock: "Low stock",
-    lead: "5–7 working days",
-    desc: "9kg front-load washing machine with EcoSilence Drive, 15 wash programmes and a 1400rpm spin. Anti-vibration side panels and child lock. Two-year warranty, ten on the motor.",
-  },
-  {
-    id: "gen",
-    name: "Elepaq 5.5kVA generator",
-    cat: "Generators",
-    value: 640000,
-    stock: "In stock",
-    lead: "5–7 working days",
-    desc: "5.5kVA petrol generator with 100% copper coil, key start and a 25-litre tank giving roughly 12 hours of run time. Low-noise muffler and automatic voltage regulation. One-year warranty.",
-  },
-  {
-    id: "ac",
-    name: "Hisense 1.5HP inverter AC",
-    cat: "Appliances",
-    value: 520000,
-    stock: "In stock",
-    lead: "3–5 working days",
-    desc: "1.5HP inverter split unit cooling rooms up to 20m². Copper condenser, gold-fin protection and low-voltage start at 150V. Installation kit included; one-year warranty, five on the compressor.",
-  },
-  {
-    id: "sofa",
-    name: "7-seater sectional sofa",
-    cat: "Furniture",
-    value: 750000,
-    stock: "Made to order",
-    lead: "10–14 working days",
-    desc: "7-seater L-shaped sectional in stain-resistant fabric over a hardwood frame, with high-density foam cushions and solid wood legs. Made to order in your choice of three neutral colourways.",
-  },
-];
 
 const STOCK_TONE = {
   "In stock": "success",
   "Low stock": "warning",
+  "Out of stock": "danger",
   "Made to order": "neutral",
 };
 
-function ProductCard({ p, open, reg }) {
+function financePath(productId, quantity = 1) {
+  const base = `/dashboard/marketplace/finance/${productId}`;
+  if (quantity > 1) return `${base}?quantity=${quantity}`;
+  return base;
+}
+
+function startFinancing(navigate, productId, quantity = 1) {
+  const path = financePath(productId, quantity);
+  if (isAuthenticated()) {
+    navigate(path);
+    return;
+  }
+  navigate("/login", { state: { from: path } });
+}
+
+function ProductCard({ product, open, onFinance }) {
+  const stock = mapProductStockLabel(product);
+  const image = productPrimaryImage(product);
+  const canFinance = isProductFinancable(product);
+
   return (
     <Card padding={0} interactive style={{ overflow: "hidden", height: "100%" }}>
       <div className="pc">
         <div className="pc-img">
-          <img
-            src={IMGS[p.id]}
-            alt={p.name}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-            }}
-          />
+          {image ? (
+            <img
+              src={image}
+              alt={product.name}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "var(--neutral-100)",
+                color: "var(--text-muted)",
+              }}
+            >
+              <Icon name="package" size={32} />
+            </div>
+          )}
+          {stock ? (
+            <div style={{ position: "absolute", top: 12, left: 12 }}>
+              <Badge tone={STOCK_TONE[stock] || "neutral"}>{stock}</Badge>
+            </div>
+          ) : null}
         </div>
-        <div className="pc-b" onClick={() => open(p)}>
-          <h3 className="pc-n">{p.name}</h3>
+        <div className="pc-b" onClick={() => open(product)}>
+          {productCategoryLabel(product) ? (
+            <span className="micro">{productCategoryLabel(product)}</span>
+          ) : null}
+          <h3 className="pc-n">{product.name}</h3>
           <div className="pc-price">
-            <span className="pc-v">{NAIRA(p.value)}</span>
+            <span className="pc-v">{formatProductPrice(Number(product.price) || 0)}</span>
           </div>
           <div className="pc-a">
             <Button
               size="sm"
               fullWidth
+              disabled={!canFinance}
               onClick={(e) => {
                 e.stopPropagation();
-                reg();
+                onFinance(product);
               }}
             >
               Start financing
@@ -152,7 +113,7 @@ function ProductCard({ p, open, reg }) {
               fullWidth
               onClick={(e) => {
                 e.stopPropagation();
-                open(p);
+                open(product);
               }}
             >
               View details
@@ -173,9 +134,15 @@ function Row({ label, value }) {
   );
 }
 
-function ProductDetail({ p, back, reg }) {
+function ProductDetail({ product, back, onFinance }) {
   const [qty, setQty] = React.useState(1);
-  const total = p.value * qty;
+  const unit = Number(product.price) || 0;
+  const total = unit * qty;
+  const stock = mapProductStockLabel(product);
+  const image = productPrimaryImage(product);
+  const category = productCategoryLabel(product);
+  const canFinance = isProductFinancable(product);
+
   return (
     <section className="band" style={{ background: "var(--surface-card)" }}>
       <div className="wrap" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
@@ -185,29 +152,54 @@ function ProductDetail({ p, back, reg }) {
         </button>
         <div className="pd">
           <div className="pd-img anim-in anim-in-1">
-            <img
-              src={IMGS[p.id]}
-              alt={p.name}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                display: "block",
-                borderRadius: 16,
-              }}
-            />
+            {image ? (
+              <img
+                src={image}
+                alt={product.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                  borderRadius: 16,
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  minHeight: 320,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "var(--neutral-100)",
+                  borderRadius: 16,
+                  color: "var(--text-muted)",
+                }}
+              >
+                <Icon name="package" size={48} />
+              </div>
+            )}
           </div>
           <div className="pd-b anim-in anim-in-2">
-            <span className="micro">{p.cat}</span>
+            {category ? <span className="micro">{category}</span> : null}
             <h1 className="h1" style={{ fontSize: "var(--fs-h1)" }}>
-              {p.name}
+              {product.name}
             </h1>
-            <div className="pd-v">{NAIRA(p.value)}</div>
-            <p className="pd-d">{p.desc}</p>
+            <div className="pd-v">{formatProductPrice(unit)}</div>
+            {product.description?.trim() ? (
+              <p className="pd-d">{product.description.trim()}</p>
+            ) : null}
             <div className="rows">
               <Row
                 label="Availability"
-                value={<Badge tone={STOCK_TONE[p.stock]}>{p.stock}</Badge>}
+                value={
+                  stock ? (
+                    <Badge tone={STOCK_TONE[stock] || "neutral"}>{stock}</Badge>
+                  ) : (
+                    "—"
+                  )
+                }
               />
               <Row label="Delivery options" value="Home delivery or pickup station" />
             </div>
@@ -215,7 +207,7 @@ function ProductDetail({ p, back, reg }) {
               <div>
                 <div className="micro">Quantity</div>
                 <div className="qty-n">
-                  {qty} {qty === 1 ? "unit" : "units"} · {NAIRA(total)}
+                  {qty} {qty === 1 ? "unit" : "units"} · {formatProductPrice(total)}
                 </div>
               </div>
               <div className="qty-c">
@@ -233,8 +225,8 @@ function ProductDetail({ p, back, reg }) {
                 <button
                   type="button"
                   aria-label="Increase quantity"
-                  disabled={qty === 10}
-                  onClick={() => setQty((q) => Math.min(10, q + 1))}
+                  disabled={qty === 99}
+                  onClick={() => setQty((q) => Math.min(99, q + 1))}
                 >
                   <Icon name="plus" size={16} />
                 </button>
@@ -251,7 +243,12 @@ function ProductDetail({ p, back, reg }) {
               <Button size="lg" variant="ghost" iconLeft="arrow-left" onClick={back}>
                 Back to products
               </Button>
-              <Button size="lg" onClick={reg} style={{ minWidth: 200 }}>
+              <Button
+                size="lg"
+                disabled={!canFinance}
+                onClick={() => onFinance(product, qty)}
+                style={{ minWidth: 200 }}
+              >
                 Start financing
               </Button>
             </div>
@@ -262,59 +259,23 @@ function ProductDetail({ p, back, reg }) {
   );
 }
 
-const CATS = [
-  "All products",
-  "Phones",
-  "Laptops",
-  "Electronics",
-  "Appliances",
-  "Generators",
-  "Furniture",
-];
-
-const PRICES = [
-  { id: "any", label: "Any price", min: 0, max: Infinity },
-  { id: "u500", label: "Under ₦500,000", min: 0, max: 499999 },
-  { id: "500-1m", label: "₦500,000 – ₦1,000,000", min: 500000, max: 1000000 },
-  { id: "1m-15", label: "₦1,000,000 – ₦1,500,000", min: 1000001, max: 1500000 },
-  { id: "o15", label: "Over ₦1,500,000", min: 1500001, max: Infinity },
-];
-
-const STEPS = [
-  [
-    "01",
-    "Choose a product",
-    "Pick what you want from the marketplace and see its value and release milestone before you start.",
-  ],
-  [
-    "02",
-    "Create a financing commitment",
-    "Commit capital to a growth program attached to that product, over a three, six or twelve month term.",
-  ],
-  [
-    "03",
-    "Receive your product",
-    "Once accumulated performance returns reach 50% of the product value, it is released for delivery or pickup.",
-  ],
-];
-
 export default function Marketplace() {
   const navigate = useNavigate();
-  const [cat, setCat] = React.useState("All products");
+  const [categoryId, setCategoryId] = React.useState("all");
   const [sel, setSel] = React.useState(null);
   const [q, setQ] = React.useState("");
+  const [debouncedSearch, setDebouncedSearch] = React.useState("");
   const [page, setPage] = React.useState(1);
   const [open2, setOpen2] = React.useState(false);
-  const [price, setPrice] = React.useState("any");
-  const [open3, setOpen3] = React.useState(false);
+
   React.useEffect(() => {
-    if (!open3) return;
-    const close = (e) => {
-      if (!e.target.closest(".pfilter")) setOpen3(false);
-    };
-    document.addEventListener("click", close);
-    return () => document.removeEventListener("click", close);
-  }, [open3]);
+    const timer = window.setTimeout(() => {
+      setDebouncedSearch(q.trim());
+      setPage(1);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [q]);
+
   React.useEffect(() => {
     if (!open2) return;
     const close = (e) => {
@@ -323,34 +284,59 @@ export default function Marketplace() {
     document.addEventListener("click", close);
     return () => document.removeEventListener("click", close);
   }, [open2]);
-  const open = (p) => {
-    setSel(p);
+
+  const categoriesQuery = useCatalogCategories();
+  const catalogQuery = useCatalogProducts({
+    page: 1,
+    size: 100,
+    search: debouncedSearch || undefined,
+    categoryId: categoryId === "all" ? undefined : categoryId,
+  });
+
+  const categories = React.useMemo(
+    () =>
+      normalizeCategoryList(categoriesQuery.data?.data).filter(
+        (c) => c.active !== false && Boolean(c.id) && Boolean(c.name?.trim()),
+      ),
+    [categoriesQuery.data],
+  );
+
+  const products = React.useMemo(
+    () => catalogQuery.data?.data?.data ?? [],
+    [catalogQuery.data],
+  );
+
+  const pageCount = Math.max(1, Math.ceil(products.length / SIZE));
+  const pg = Math.min(page, pageCount);
+  const rows = products.slice((pg - 1) * SIZE, pg * SIZE);
+
+  const selectedCategoryLabel =
+    categoryId === "all"
+      ? "All products"
+      : categories.find((c) => c.id === categoryId)?.name || "All products";
+
+  const open = (product) => {
+    setSel(product);
     window.scrollTo(0, 0);
   };
+
   const back = () => {
     setSel(null);
     window.scrollTo(0, 0);
   };
-  const reg = () => navigate("/register");
-  const band = PRICES.find((b) => b.id === price) || PRICES[0];
-  const all = PRODUCTS.filter(
-    (p) =>
-      (cat === "All products" || p.cat === cat) &&
-      p.value >= band.min &&
-      p.value <= band.max &&
-      (p.name + " " + p.cat).toLowerCase().includes(q.trim().toLowerCase()),
-  );
-  const pageCount = Math.max(1, Math.ceil(all.length / SIZE));
-  const pg = Math.min(page, pageCount);
-  const rows = all.slice((pg - 1) * SIZE, pg * SIZE);
-  const pick = (c) => {
-    setCat(c);
+
+  const onFinance = (product, quantity = 1) => {
+    startFinancing(navigate, product.id, quantity);
+  };
+
+  const pickCategory = (id) => {
+    setCategoryId(id);
     setPage(1);
   };
 
   return (
     <div>
-      <section className="ab-hero-band">
+      {/* <section className="ab-hero-band">
         <div className="wrap ab-hero">
           <div className="ab-hero-l">
             <h1 className="ab-h1 anim-in anim-in-1">
@@ -362,10 +348,10 @@ export default function Marketplace() {
             </p>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {sel ? (
-        <ProductDetail p={sel} back={back} reg={reg} />
+        <ProductDetail product={sel} back={back} onFinance={onFinance} />
       ) : (
         <React.Fragment>
           <section className="band" style={{ background: "var(--surface-card)" }}>
@@ -389,10 +375,7 @@ export default function Marketplace() {
                 <div className="mp-search">
                   <Input
                     value={q}
-                    onChange={(ev) => {
-                      setQ(ev.target.value);
-                      setPage(1);
-                    }}
+                    onChange={(ev) => setQ(ev.target.value)}
                     iconLeft="search"
                     placeholder="Search products"
                     aria-label="Search products"
@@ -406,60 +389,39 @@ export default function Marketplace() {
                     onClick={() => setOpen2(!open2)}
                   >
                     <Icon name="sliders-horizontal" size={16} />
-                    <span>{cat}</span>
+                    <span>{selectedCategoryLabel}</span>
                     <Icon name={open2 ? "chevron-up" : "chevron-down"} size={16} />
                   </button>
                   {open2 && (
                     <div className="fmenu" role="listbox">
                       <span className="fmenu-h">Filter by category</span>
-                      {CATS.map((c) => (
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={categoryId === "all"}
+                        className="fopt"
+                        onClick={() => {
+                          pickCategory("all");
+                          setOpen2(false);
+                        }}
+                      >
+                        <span>All products</span>
+                        {categoryId === "all" && <Icon name="check" size={16} />}
+                      </button>
+                      {categories.map((c) => (
                         <button
-                          key={c}
+                          key={c.id}
                           type="button"
                           role="option"
-                          aria-selected={c === cat}
+                          aria-selected={c.id === categoryId}
                           className="fopt"
                           onClick={() => {
-                            pick(c);
+                            pickCategory(c.id);
                             setOpen2(false);
                           }}
                         >
-                          <span>{c}</span>
-                          {c === cat && <Icon name="check" size={16} />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="pfilter filter">
-                  <button
-                    type="button"
-                    className="fbtn"
-                    aria-expanded={open3}
-                    onClick={() => setOpen3(!open3)}
-                  >
-                    <Icon name="banknote" size={16} />
-                    <span>{band.label}</span>
-                    <Icon name={open3 ? "chevron-up" : "chevron-down"} size={16} />
-                  </button>
-                  {open3 && (
-                    <div className="fmenu" role="listbox">
-                      <span className="fmenu-h">Filter by price</span>
-                      {PRICES.map((b) => (
-                        <button
-                          key={b.id}
-                          type="button"
-                          role="option"
-                          aria-selected={b.id === price}
-                          className="fopt"
-                          onClick={() => {
-                            setPrice(b.id);
-                            setPage(1);
-                            setOpen3(false);
-                          }}
-                        >
-                          <span>{b.label}</span>
-                          {b.id === price && <Icon name="check" size={16} />}
+                          <span>{c.name}</span>
+                          {c.id === categoryId && <Icon name="check" size={16} />}
                         </button>
                       ))}
                     </div>
@@ -467,10 +429,36 @@ export default function Marketplace() {
                 </div>
               </div>
 
-              {rows.length ? (
+              {catalogQuery.isLoading ? (
+                <Card padding={32}>
+                  <p
+                    style={{ margin: 0, textAlign: "center", color: "var(--text-muted)" }}
+                  >
+                    Loading marketplace products…
+                  </p>
+                </Card>
+              ) : catalogQuery.isError ? (
+                <Card padding={0}>
+                  <EmptyState
+                    icon="alert-circle"
+                    title="Could not load products"
+                    description={normalizeError(catalogQuery.error)}
+                    action={
+                      <Button onClick={() => void catalogQuery.refetch()}>
+                        Try again
+                      </Button>
+                    }
+                  />
+                </Card>
+              ) : rows.length ? (
                 <Reveal as="div" className="pgrid reveal-group" delay={60}>
-                  {rows.map((p) => (
-                    <ProductCard key={p.id} p={p} open={open} reg={reg} />
+                  {rows.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      open={open}
+                      onFinance={onFinance}
+                    />
                   ))}
                 </Reveal>
               ) : (
@@ -483,7 +471,7 @@ export default function Marketplace() {
                 </Card>
               )}
 
-              {all.length > SIZE && (
+              {products.length > SIZE && (
                 <div className="mp-pager">
                   <Pagination page={pg} pageCount={pageCount} onChange={setPage} />
                 </div>

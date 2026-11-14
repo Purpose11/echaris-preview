@@ -121,7 +121,7 @@ export default function Services() {
   const reg = () => navigate("/register");
   return (
     <div>
-      <section className="ab-hero-band">
+      {/* <section className="ab-hero-band">
         <div className="wrap ab-hero">
           <div className="ab-hero-l">
             <h1 className="ab-h1 anim-in anim-in-1">
@@ -133,7 +133,7 @@ export default function Services() {
             </p>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="band" style={{ background: "var(--surface-card)" }}>
         <div

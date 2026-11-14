@@ -1,98 +1,78 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
+import { useNotificationStream } from "@/api/notifications/hooks";
+import logoOrange from "@/assets/echaris-logo-orange.png";
 import { KycProtectedRoute } from "@/components/shared/KycProtectedRoute";
 import { UserProtectedRoute } from "@/components/shared/UserProtectedRoute";
 import { UserSidebar } from "@/components/user/UserSidebar";
+import { Icon } from "@/design-system/components/core/Icon.jsx";
+import { Logo } from "@/design-system/components/core/Logo.jsx";
 
 export default function UserLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  useNotificationStream(true);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [mobileOpen]);
 
   return (
     <UserProtectedRoute>
       <KycProtectedRoute>
-        <div
-          style={{
-            display: "flex",
-            minHeight: "100vh",
-            background: "var(--surface-page, #F7F6F4)",
-          }}
-        >
-          <div className="user-sidebar-desktop" style={{ display: "none" }}>
+        <div className="user-shell">
+          <div className="user-sidebar-desktop">
             <UserSidebar />
           </div>
 
           {mobileOpen && (
             <button
               type="button"
-              aria-label="Close sidebar"
+              className="user-shell__backdrop"
+              aria-label="Close menu"
               onClick={() => setMobileOpen(false)}
-              style={{
-                position: "fixed",
-                inset: 0,
-                background: "rgba(26,26,26,0.45)",
-                border: "none",
-                zIndex: 40,
-              }}
             />
           )}
 
           <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              bottom: 0,
-              zIndex: 50,
-              transform: mobileOpen ? "translateX(0)" : "translateX(-100%)",
-              transition: "transform 200ms ease",
-            }}
+            className={`user-shell__drawer${mobileOpen ? "is-open" : ""}`}
+            aria-hidden={!mobileOpen}
           >
-            <UserSidebar onNavigate={() => setMobileOpen(false)} />
+            <UserSidebar
+              onNavigate={() => setMobileOpen(false)}
+              onClose={() => setMobileOpen(false)}
+            />
           </div>
 
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-            <header
-              className="user-mobile-header"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                height: 56,
-                paddingInline: 16,
-                borderBottom: "1px solid var(--border-subtle, #E3E0DC)",
-                background: "var(--surface-card, #fff)",
-              }}
-            >
+          <div className="user-shell__main">
+            <header className="user-mobile-header">
               <button
                 type="button"
+                className="user-mobile-header__menu"
+                aria-label="Open menu"
+                aria-expanded={mobileOpen}
                 onClick={() => setMobileOpen(true)}
-                style={{
-                  border: "1px solid var(--border-subtle, #E3E0DC)",
-                  background: "transparent",
-                  borderRadius: 8,
-                  padding: "6px 10px",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
               >
-                Menu
+                <Icon name="menu" size={20} />
               </button>
-              <span style={{ fontWeight: 700 }}>ECharis Portal</span>
+              <Logo height={24} src={logoOrange} className="user-mobile-header__logo" />
             </header>
 
-            <main data-scroll-root style={{ flex: 1, overflow: "auto", padding: 24 }}>
+            <main data-scroll-root className="user-shell__content">
               <Outlet />
             </main>
           </div>
         </div>
-
-        <style>{`
-        @media (min-width: 900px) {
-          .user-sidebar-desktop { display: block !important; }
-          .user-mobile-header { display: none !important; }
-        }
-      `}</style>
       </KycProtectedRoute>
     </UserProtectedRoute>
   );

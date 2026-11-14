@@ -18,13 +18,76 @@ export interface CustomerProfile {
   phoneNumber: string | null;
   profilePictureUrl: string | null;
   dateOfBirth: string | null;
-  age: number | null;
+  age: number | string | null;
   gender: Gender | null;
+  referralCode?: string | null;
   active: boolean;
   verified: boolean;
+  /** Present on login/profile — whether the customer has submitted KYC. */
+  doneKyc?: boolean;
   marketingEmailsEnabled: boolean;
   lastLoginAt: string | null;
   createdAt: string;
+  updatedAt: string;
+}
+
+/** Verified referral row from GET /customer/private/referrals. */
+export interface CustomerReferral {
+  customerId: string;
+  verifiedAt: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  fullName?: string | null;
+}
+
+export interface PageResult<T> {
+  totalPage: number;
+  numberOfElements: number;
+  totalElements: number;
+  data: T[];
+}
+
+export interface ListReferralsParams {
+  page?: number;
+  size?: number;
+}
+
+/** PATCH /customer/private/profile */
+export interface UpdateCustomerProfileRequest {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  dateOfBirth?: string | null;
+  gender?: Gender | null;
+  profilePictureUrl?: string | null;
+  marketingEmailsEnabled?: boolean;
+}
+
+/** PATCH /customer/private/change-password */
+export interface ChangeCustomerPasswordRequest {
+  oldPassword: string;
+  newPassword: string;
+}
+
+/** POST /customer/private/payout-account */
+export interface UpdatePayoutAccountRequest {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  amount: number;
+}
+
+export interface PayoutAccountDetails {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  amount: number;
+}
+
+/** GET /customer/private/payout-account */
+export interface CustomerPayoutAccount {
+  details: PayoutAccountDetails;
+  version: number;
   updatedAt: string;
 }
 

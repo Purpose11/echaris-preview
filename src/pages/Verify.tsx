@@ -10,6 +10,7 @@ import type { CustomerKycData, KycDocument } from "@/api/customer/types";
 import { useUploadPublicFile } from "@/api/utilities/hooks";
 import logoOrange from "@/assets/echaris-logo-orange.png";
 import { UserProtectedRoute } from "@/components/shared/UserProtectedRoute";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/design-system/components/core/Badge.jsx";
 import { Button } from "@/design-system/components/core/Button.jsx";
 import { Card } from "@/design-system/components/core/Card.jsx";
@@ -21,7 +22,12 @@ import { FormField } from "@/design-system/components/forms/FormField.jsx";
 import { Input } from "@/design-system/components/forms/Input.jsx";
 import { Radio } from "@/design-system/components/forms/Radio.jsx";
 import { Select } from "@/design-system/components/forms/Select.jsx";
-import { getAccessToken, getLoggedInUser, isAuthenticated } from "@/utils/authHelper";
+import {
+  getAccessToken,
+  getLoggedInUser,
+  isAuthenticated,
+  setStoredDoneKyc,
+} from "@/utils/authHelper";
 import { canResubmitKyc, needsKyc } from "@/utils/kycGate";
 import { normalizeError } from "@/utils/normalizeError";
 import {
@@ -30,6 +36,7 @@ import {
   type KycDocumentUiType,
   residentialAddressFormSchema,
   type ResidentialAddressFormValues,
+  toDeliveryAddressPayload,
   toKycDocumentType,
 } from "@/validations/customer/dto";
 
@@ -157,13 +164,15 @@ function StatusCard({
   }[tone];
 
   return (
-    <Card padding={28} className="anim-in anim-in-2">
+    <Card padding={28} className="kyc-card anim-in anim-in-2">
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           gap: 20,
           alignItems: "flex-start",
+          width: "100%",
+          minWidth: 0,
         }}
       >
         <span
@@ -329,28 +338,23 @@ function VerifyContent() {
     if (!kycQuery.isSuccess) return;
     const data = kycQuery.data?.data;
     if (!data) return;
+    if (data.doneKyc) {
+      setStoredDoneKyc(true);
+    }
     if (!needsKyc(data) && !canResubmitKyc(data)) {
       navigate("/dashboard", { replace: true });
     }
   }, [kycQuery.isSuccess, kycQuery.data, navigate]);
 
   const onAddressContinue = addressForm.handleSubmit(async (values) => {
-    if (!user?.id) {
+    if (!isAuthenticated() || !user?.id) {
       toast.error("Your session expired. Please log in again.");
       navigate("/login", { replace: true });
       return;
     }
 
     try {
-      const res = await addressMutation.mutateAsync({
-        userId: user.id,
-        country: values.country,
-        state: values.state,
-        city: values.city,
-        addressLine: values.addressLine.trim(),
-        addressLine2: values.addressLine2?.trim() || null,
-        postalCode: values.postalCode?.trim() || null,
-      });
+      const res = await addressMutation.mutateAsync(toDeliveryAddressPayload(values));
       if (res.success === false) {
         toast.error(res.message || "Could not save your address.");
         return;
@@ -470,7 +474,7 @@ function VerifyContent() {
             </div>
           ))}
         </div>
-        <Card padding={28} className="anim-in anim-in-3">
+        <Card padding={28} className="kyc-card anim-in anim-in-3">
           {step === 1 ? (
             <form
               onSubmit={onAddressContinue}
@@ -479,7 +483,7 @@ function VerifyContent() {
               <section style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <SectionHead
                   title="Residential address"
-                  sub="Use the address on your utility bill or bank record. This address supports identity verification, product delivery and logistics management."
+                  sub="Use the address on your utility bill or bank record. This is saved as your delivery address for identity verification, product delivery and logistics."
                 />
                 <FormField
                   label="Address line 1"
@@ -905,24 +909,45 @@ function VerifyContent() {
 
   if (kycQuery.isLoading) {
     return (
-      <div className="page">
+      <div className="page kyc">
         <header className="bar">
           <Logo height={24} src={logoOrange} />
         </header>
         <div className="wrap">
-          <StatusCard
-            tone="brand"
-            icon="spinner"
-            title="Loading verification status"
-            body="Checking whether your identity verification is already complete."
-          />
+          <div
+            className="kyc-card"
+            aria-busy="true"
+            aria-label="Loading verification status"
+            style={{
+              padding: 28,
+              display: "flex",
+              flexDirection: "column",
+              gap: 20,
+              width: "100%",
+              minWidth: 0,
+            }}
+          >
+            <Skeleton className="size-[52px] rounded-full" />
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <Skeleton className="h-7 w-[min(100%,280px)]" />
+              <Skeleton className="h-4 w-full max-w-[420px]" />
+              <Skeleton className="h-4 w-[80%] max-w-[340px]" />
+            </div>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 8 }}
+            >
+              <Skeleton className="h-11 w-full" />
+              <Skeleton className="h-11 w-full" />
+              <Skeleton className="h-11 w-full" />
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="page">
+    <div className="page kyc">
       <header className="bar">
         <a
           href="/"

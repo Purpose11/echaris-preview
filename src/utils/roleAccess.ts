@@ -39,19 +39,47 @@ export const PATH_FEATURE_RULES: Array<{ pattern: RegExp; feature: AdminFeature 
 
 /* ---- User features ---- */
 
-export type UserFeature = "overview" | "profile" | "orders" | "wallet";
+export type UserFeature =
+  "overview" | "commitments" | "marketplace" | "referrals" | "settings";
 
 export interface UserNavItem {
   label: string;
   path: string;
   feature: UserFeature;
+  icon: string;
 }
 
 export const USER_NAV_ITEMS: readonly UserNavItem[] = [
-  { label: "Overview", path: "/dashboard", feature: "overview" },
-  { label: "Profile", path: "/dashboard/profile", feature: "profile" },
-  { label: "Orders", path: "/dashboard/orders", feature: "orders" },
-  { label: "Wallet", path: "/dashboard/wallet", feature: "wallet" },
+  {
+    label: "Overview",
+    path: "/dashboard",
+    feature: "overview",
+    icon: "layout-grid",
+  },
+  {
+    label: "Capital commitments",
+    path: "/dashboard/commitments",
+    feature: "commitments",
+    icon: "trending-up",
+  },
+  {
+    label: "Marketplace",
+    path: "/dashboard/marketplace",
+    feature: "marketplace",
+    icon: "store",
+  },
+  {
+    label: "Referrals",
+    path: "/dashboard/referrals",
+    feature: "referrals",
+    icon: "users",
+  },
+  {
+    label: "Settings",
+    path: "/dashboard/settings",
+    feature: "settings",
+    icon: "settings",
+  },
 ];
 
 /* ---- Helpers ---- */

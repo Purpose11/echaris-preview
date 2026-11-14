@@ -69,6 +69,7 @@ declare module "@/design-system/components/core/Logo.jsx" {
     height?: number;
     src?: string;
     className?: string;
+    alt?: string;
     style?: CSSProperties;
   }>;
 }
@@ -94,6 +95,18 @@ declare module "@/design-system/components/core/Badge.jsx" {
     dot?: boolean;
     size?: string;
     children?: ReactNode;
+    style?: CSSProperties;
+  }>;
+}
+
+declare module "@/design-system/components/core/Avatar.jsx" {
+  import type { ComponentType, CSSProperties } from "react";
+
+  export const Avatar: ComponentType<{
+    name?: string;
+    src?: string;
+    size?: number;
+    tone?: string;
     style?: CSSProperties;
   }>;
 }
@@ -160,12 +173,17 @@ declare module "@/design-system/components/forms/Select.jsx" {
 }
 
 declare module "@/design-system/components/forms/Checkbox.jsx" {
-  import type { ComponentType, CSSProperties, InputHTMLAttributes } from "react";
+  import type {
+    ComponentType,
+    CSSProperties,
+    InputHTMLAttributes,
+    ReactNode,
+  } from "react";
 
   export const Checkbox: ComponentType<
     Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
-      label?: string;
-      description?: string;
+      label?: ReactNode;
+      description?: ReactNode;
       style?: CSSProperties;
     }
   >;

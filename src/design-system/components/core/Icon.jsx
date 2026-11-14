@@ -1,48 +1,156 @@
-import React from 'react';
+import {
+  Activity,
+  ArrowDownLeft,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Banknote,
+  Bell,
+  BookOpen,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  CircleAlert,
+  CircleCheck,
+  Coins,
+  Eye,
+  EyeOff,
+  FileCheck,
+  HeartHandshake,
+  IdCard,
+  Inbox,
+  Info,
+  LayoutGrid,
+  LifeBuoy,
+  Lightbulb,
+  LoaderCircle,
+  Lock,
+  LogOut,
+  Mail,
+  MapPin,
+  Megaphone,
+  Menu,
+  Minus,
+  Moon,
+  Phone,
+  Plus,
+  RefreshCw,
+  Scale,
+  Search,
+  Settings,
+  ShieldCheck,
+  SlidersHorizontal,
+  Sprout,
+  Store,
+  Sun,
+  Target,
+  TrendingUp,
+  TriangleAlert,
+  Truck,
+  Upload,
+  User,
+  Users,
+  Wallet,
+  X,
+  Zap,
+} from "lucide-react";
 
-const CDN = 'https://unpkg.com/lucide-static@0.460.0/icons/';
-const cache = {};
+/** Local lucide-react icons — no CDN / network fetch. */
+const ICONS = {
+  activity: Activity,
+  "arrow-down-left": ArrowDownLeft,
+  "arrow-left": ArrowLeft,
+  "arrow-right": ArrowRight,
+  "arrow-up-right": ArrowUpRight,
+  banknote: Banknote,
+  bell: Bell,
+  "book-open": BookOpen,
+  check: Check,
+  "chevron-down": ChevronDown,
+  "chevron-left": ChevronLeft,
+  "chevron-right": ChevronRight,
+  "chevron-up": ChevronUp,
+  "circle-alert": CircleAlert,
+  "circle-check": CircleCheck,
+  coins: Coins,
+  eye: Eye,
+  "eye-off": EyeOff,
+  "file-check": FileCheck,
+  "heart-handshake": HeartHandshake,
+  "id-card": IdCard,
+  inbox: Inbox,
+  info: Info,
+  "layout-grid": LayoutGrid,
+  "life-buoy": LifeBuoy,
+  lightbulb: Lightbulb,
+  "loader-circle": LoaderCircle,
+  lock: Lock,
+  "log-out": LogOut,
+  mail: Mail,
+  "map-pin": MapPin,
+  megaphone: Megaphone,
+  menu: Menu,
+  minus: Minus,
+  moon: Moon,
+  phone: Phone,
+  plus: Plus,
+  "refresh-cw": RefreshCw,
+  scale: Scale,
+  search: Search,
+  settings: Settings,
+  "shield-check": ShieldCheck,
+  "sliders-horizontal": SlidersHorizontal,
+  sprout: Sprout,
+  store: Store,
+  sun: Sun,
+  target: Target,
+  "triangle-alert": TriangleAlert,
+  "trending-up": TrendingUp,
+  truck: Truck,
+  upload: Upload,
+  user: User,
+  users: Users,
+  wallet: Wallet,
+  x: X,
+  zap: Zap,
+};
 
-/* Lucide outline icon. The SVG source is fetched once per name, cached, and
-   inlined so it inherits currentColor and survives DOM-based screenshotting. */
-export function Icon({ name, size = 20, style, className, title, ...rest }) {
-  const [markup, setMarkup] = React.useState(cache[name] || null);
-
-  React.useEffect(() => {
-    let live = true;
-    if (cache[name]) { setMarkup(cache[name]); return; }
-    fetch(CDN + name + '.svg')
-      .then(r => (r.ok ? r.text() : ''))
-      .then(t => {
-        const cleaned = t
-          .replace(/<\?xml[^>]*\?>/g, '')
-          .replace(/width="24"/, 'width="100%"')
-          .replace(/height="24"/, 'height="100%"');
-        cache[name] = cleaned;
-        if (live) setMarkup(cleaned);
-      })
-      .catch(() => {});
-    return () => { live = false; };
-  }, [name]);
+/**
+ * Lucide outline icon rendered from the local `lucide-react` package.
+ * Accepts kebab-case Lucide names (e.g. "trending-up", "circle-check").
+ */
+export function Icon({
+  name,
+  size = 20,
+  style,
+  className,
+  title,
+  strokeWidth = 2,
+  ...rest
+}) {
+  const Comp = ICONS[name] || CircleAlert;
 
   return (
     <span
-      role={title ? 'img' : 'presentation'}
+      role={title ? "img" : "presentation"}
       aria-label={title}
       aria-hidden={title ? undefined : true}
       className={className}
-      dangerouslySetInnerHTML={markup ? { __html: markup } : undefined}
       style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flex: 'none',
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flex: "none",
         width: size,
         height: size,
-        color: 'inherit',
+        color: "inherit",
         ...style,
       }}
       {...rest}
-    />
+    >
+      <Comp size={size} strokeWidth={strokeWidth} absoluteStrokeWidth={false} />
+    </span>
   );
 }

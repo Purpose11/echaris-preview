@@ -34,6 +34,8 @@ export interface StoredUser {
   firstName: string;
   lastName: string;
   userType: "ADMIN" | "SUPER_ADMIN" | "USER";
+  /** From login `customer.doneKyc` — used to gate the dashboard without a KYC fetch. */
+  doneKyc?: boolean;
 }
 
 export function getLoggedInUser(): StoredUser | null {
@@ -47,6 +49,16 @@ export function getLoggedInUser(): StoredUser | null {
 
 export function setLoggedInUser(user: StoredUser) {
   localStorage.setItem(USER_KEY, JSON.stringify(user));
+}
+
+export function setStoredDoneKyc(doneKyc: boolean) {
+  const existing = getLoggedInUser();
+  if (!existing) return;
+  setLoggedInUser({ ...existing, doneKyc });
+}
+
+export function getStoredDoneKyc(): boolean {
+  return Boolean(getLoggedInUser()?.doneKyc);
 }
 
 export function getAdminRole(): StoredUser["userType"] | null {

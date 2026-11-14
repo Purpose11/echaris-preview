@@ -10,8 +10,13 @@
       (function () {
         try {
           var t = localStorage.getItem("echaris-theme");
-          if (t) document.documentElement.setAttribute("data-theme", t);
-        } catch (e) {}
+          document.documentElement.setAttribute(
+            "data-theme",
+            t === "dark" ? "dark" : "light",
+          );
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
       })();
     </script>
   </head>

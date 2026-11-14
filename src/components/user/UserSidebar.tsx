@@ -1,65 +1,82 @@
 import { NavLink } from "react-router-dom";
 
+import logoWhite from "@/assets/echaris-logo-white.png";
+import { Avatar } from "@/design-system/components/core/Avatar.jsx";
+import { Icon } from "@/design-system/components/core/Icon.jsx";
+import { Logo } from "@/design-system/components/core/Logo.jsx";
+import { getLoggedInUser, UserLogout } from "@/utils/authHelper";
 import { USER_NAV_ITEMS } from "@/utils/roleAccess";
 
 interface UserSidebarProps {
   onNavigate?: () => void;
+  /** Shown in the mobile drawer so users can dismiss the menu. */
+  onClose?: () => void;
 }
 
-export function UserSidebar({ onNavigate }: UserSidebarProps) {
+function displayName(user: ReturnType<typeof getLoggedInUser>) {
+  const full = [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
+  return full || user?.email || "Client";
+}
+
+export function UserSidebar({ onNavigate, onClose }: UserSidebarProps) {
+  const user = getLoggedInUser();
+  const name = displayName(user);
+
   return (
-    <aside
-      style={{
-        width: 240,
-        flexShrink: 0,
-        borderRight: "1px solid var(--border-subtle, #E3E0DC)",
-        background: "var(--surface-card, #fff)",
-        padding: "24px 16px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        minHeight: "100%",
-      }}
-    >
-      <div
-        style={{
-          fontSize: 12,
-          fontWeight: 700,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: "var(--text-muted, #827C74)",
-          marginBottom: 12,
-          paddingInline: 8,
-        }}
-      >
-        Client portal
+    <aside className="user-sidebar">
+      <div className="user-sidebar__brand">
+        <Logo height={28} variant="white" src={logoWhite} />
+        {onClose ? (
+          <button
+            type="button"
+            className="user-sidebar__close"
+            aria-label="Close menu"
+            onClick={onClose}
+          >
+            <Icon name="x" size={20} />
+          </button>
+        ) : null}
       </div>
-      <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+
+      <nav className="user-sidebar__nav" aria-label="Client portal">
         {USER_NAV_ITEMS.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             end={item.path === "/dashboard"}
             onClick={onNavigate}
-            style={({ isActive }) => ({
-              display: "block",
-              padding: "10px 12px",
-              borderRadius: 8,
-              textDecoration: "none",
-              fontSize: 14,
-              fontWeight: 600,
-              color: isActive
-                ? "var(--text-brand, #E03A00)"
-                : "var(--text-body, #403C37)",
-              background: isActive
-                ? "var(--surface-brand-subtle, #FFF3EB)"
-                : "transparent",
-            })}
+            className={({ isActive }) =>
+              `user-sidebar__link${isActive ? "is-active" : ""}`
+            }
           >
-            {item.label}
+            <Icon name={item.icon} size={18} />
+            <span>{item.label}</span>
           </NavLink>
         ))}
       </nav>
+
+      <div className="user-sidebar__footer">
+        <div className="user-sidebar__profile">
+          <Avatar
+            name={name}
+            size={40}
+            style={{ background: "#F3C6B0", color: "#3A2418" }}
+          />
+          <div className="user-sidebar__profile-text">
+            <div className="user-sidebar__name">{name}</div>
+            <div className="user-sidebar__role">client</div>
+          </div>
+          <button
+            type="button"
+            className="user-sidebar__logout"
+            aria-label="Log out"
+            title="Log out"
+            onClick={() => UserLogout()}
+          >
+            <Icon name="log-out" size={18} />
+          </button>
+        </div>
+      </div>
     </aside>
   );
 }

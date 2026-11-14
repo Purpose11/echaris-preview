@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { Gender, UpdateCustomerProfileRequest } from "@/api/customer/types";
+
 const emailField = z
   .string()
   .trim()
@@ -30,7 +32,7 @@ export const registerFormSchema = z.object({
     .max(100, "Password must be at most 100 characters."),
   referralCode: z.string().optional().default(""),
   acceptedConsent: z.boolean().refine((v) => v === true, {
-    message: "Accept the terms and privacy policy to continue.",
+    message: "Accept the terms and conditions to continue.",
   }),
 });
 
@@ -93,6 +95,167 @@ export const newPasswordFormSchema = z
 
 export type NewPasswordFormValues = z.infer<typeof newPasswordFormSchema>;
 
+const genderValues = ["MALE", "FEMALE", "NON_BINARY"] as const;
+
+export const updateProfileFormSchema = z.object({
+  firstName: z.string().trim().min(1, "Enter your first name."),
+  lastName: z.string().trim().min(1, "Enter your last name."),
+  phoneNumber: z
+    .string()
+    .trim()
+    .min(1, "Enter your phone number.")
+    .refine((v) => v.replace(/\D/g, "").length >= 7, {
+      message: "That phone number is too short.",
+    })
+    .refine((v) => v.replace(/\D/g, "").length <= 15, {
+      message: "That phone number is too long.",
+    }),
+  dateOfBirth: z
+    .string()
+    .trim()
+    .default("")
+    .refine((v) => v === "" || !Number.isNaN(Date.parse(v)), {
+      message: "Enter a valid date of birth.",
+    })
+    .refine((v) => v === "" || new Date(v) < new Date(), {
+      message: "Date of birth must be in the past.",
+    }),
+  gender: z
+    .string()
+    .default("")
+    .refine((v) => v === "" || (genderValues as readonly string[]).includes(v), {
+      message: "Select a valid gender.",
+    }),
+});
+
+export type UpdateProfileFormValues = z.infer<typeof updateProfileFormSchema>;
+
+export function toUpdateProfilePayload(
+  values: UpdateProfileFormValues,
+  existing?: {
+    profilePictureUrl?: string | null;
+    marketingEmailsEnabled?: boolean;
+  },
+): UpdateCustomerProfileRequest {
+  const gender = values.gender.trim();
+  const parsedGender: Gender | null =
+    gender === "MALE" || gender === "FEMALE" || gender === "NON_BINARY" ? gender : null;
+  return {
+    firstName: values.firstName.trim(),
+    lastName: values.lastName.trim(),
+    phoneNumber: values.phoneNumber.trim(),
+    dateOfBirth: values.dateOfBirth.trim() ? values.dateOfBirth.trim() : null,
+    gender: parsedGender,
+    profilePictureUrl: existing?.profilePictureUrl ?? null,
+    marketingEmailsEnabled: existing?.marketingEmailsEnabled ?? false,
+  };
+}
+
+const passwordStrength = z
+  .string()
+  .min(1, "Enter a new password.")
+  .min(8, "Use at least 8 characters.")
+  .max(100, "Password must be at most 100 characters.")
+  .refine((v) => /[A-Z]/.test(v), {
+    message: "Include at least one uppercase letter.",
+  })
+  .refine((v) => /\d/.test(v), {
+    message: "Include at least one number.",
+  });
+
+export const changePasswordFormSchema = z
+  .object({
+    oldPassword: z.string().min(1, "Enter your current password."),
+    newPassword: passwordStrength,
+    confirmPassword: z.string().min(1, "Repeat the new password."),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "The two passwords do not match. Enter the same password in both fields.",
+    path: ["confirmPassword"],
+  });
+
+export type ChangePasswordFormValues = z.infer<typeof changePasswordFormSchema>;
+
+export function normalizePersonName(value: string) {
+  return value.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+export function formatProfileFullName(
+  firstName?: string | null,
+  lastName?: string | null,
+) {
+  return [firstName, lastName]
+    .map((part) => part?.trim())
+    .filter(Boolean)
+    .join(" ");
+}
+
+/** Account name must include every profile first/last name token, in any order. */
+export function accountNameContainsProfileNames(
+  accountName: string,
+  firstName?: string | null,
+  lastName?: string | null,
+) {
+  const first = normalizePersonName(firstName ?? "");
+  const last = normalizePersonName(lastName ?? "");
+  if (!first || !last) return false;
+
+  const tokens = new Set(normalizePersonName(accountName).split(" ").filter(Boolean));
+  const required = [...first.split(" "), ...last.split(" ")].filter(Boolean);
+  return required.every((part) => tokens.has(part));
+}
+
+export function createPayoutAccountFormSchema(
+  firstName?: string | null,
+  lastName?: string | null,
+) {
+  const first = firstName?.trim() ?? "";
+  const last = lastName?.trim() ?? "";
+  const profileLabel = formatProfileFullName(first, last);
+
+  return z
+    .object({
+      bank: z.string().min(1, "Select a bank."),
+      customBankName: z.string().trim().optional().default(""),
+      accountNumber: z
+        .string()
+        .trim()
+        .min(1, "Enter your account number.")
+        .regex(/^\d{10}$/, "Enter a valid 10-digit account number."),
+      accountName: z.string().trim().min(1, "Enter the account name."),
+    })
+    .superRefine((data, ctx) => {
+      if (data.bank === "OTHER" && !data.customBankName?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Enter your bank name.",
+          path: ["customBankName"],
+        });
+      }
+
+      if (!first || !last) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Update your profile name before saving a payout account.",
+          path: ["accountName"],
+        });
+        return;
+      }
+
+      if (!accountNameContainsProfileNames(data.accountName, first, last)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Account name must include both your first and last name (${profileLabel}), in any order. A middle name is allowed.`,
+          path: ["accountName"],
+        });
+      }
+    });
+}
+
+export type PayoutAccountFormValues = z.infer<
+  ReturnType<typeof createPayoutAccountFormSchema>
+>;
+
 export const kycDocumentUiTypes = ["nin", "dl", "passport"] as const;
 export type KycDocumentUiType = (typeof kycDocumentUiTypes)[number];
 
@@ -106,6 +269,19 @@ export const residentialAddressFormSchema = z.object({
 });
 
 export type ResidentialAddressFormValues = z.infer<typeof residentialAddressFormSchema>;
+
+/** Maps the KYC address step to POST /addresses/private/create-or-update. */
+export function toDeliveryAddressPayload(values: ResidentialAddressFormValues) {
+  return {
+    addressType: "DELIVERY" as const,
+    country: values.country,
+    state: values.state,
+    city: values.city.trim(),
+    addressLine: values.addressLine.trim(),
+    addressLine2: values.addressLine2?.trim() || null,
+    postalCode: values.postalCode?.trim() || null,
+  };
+}
 
 export const identityDocumentFormSchema = z
   .object({

@@ -5,18 +5,11 @@ export default function DashboardPlaceholder() {
   const title = pathname.split("/").filter(Boolean).slice(1).join(" / ") || "Dashboard";
 
   return (
-    <div>
-      <h1
-        style={{
-          margin: "0 0 8px",
-          fontSize: 28,
-          fontWeight: 800,
-          textTransform: "capitalize",
-        }}
-      >
+    <div className="flex w-full flex-col gap-3">
+      <h1 className="m-0 text-[28px] leading-tight font-extrabold tracking-[-0.03em] text-[var(--text-heading)] capitalize md:text-[32px]">
         {title}
       </h1>
-      <p style={{ margin: 0, color: "var(--text-muted)" }}>
+      <p className="m-0 max-w-[520px] text-sm leading-relaxed text-[var(--text-muted)] md:text-[15px]">
         Client portal shell — feature pages will land here.
       </p>
     </div>

@@ -135,7 +135,7 @@ function Heading({
   title,
   sub,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   sub: string;
 }) {
@@ -144,9 +144,11 @@ function Heading({
       className="anim-in anim-in-1"
       style={{ display: "flex", flexDirection: "column", gap: 8 }}
     >
-      <span className="micro" style={{ color: "var(--text-muted)" }}>
-        {eyebrow}
-      </span>
+      {eyebrow ? (
+        <span className="micro" style={{ color: "var(--text-muted)" }}>
+          {eyebrow}
+        </span>
+      ) : null}
       <h1
         style={{
           margin: 0,
@@ -580,8 +582,25 @@ export default function Register() {
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                       field.onChange(e.target.checked)
                     }
-                    label="I accept the terms and conditions and the privacy policy"
-                    description="Includes the client agreement covering capital commitments and performance returns."
+                    label={
+                      <span>
+                        I accept the{" "}
+                        <a
+                          href="/terms"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            color: "var(--brand-primary)",
+                            fontWeight: "var(--fw-semibold)",
+                            textDecoration: "underline",
+                            textUnderlineOffset: 3,
+                          }}
+                        >
+                          terms and conditions
+                        </a>
+                      </span>
+                    }
                   />
                 </FormField>
               )}
@@ -624,7 +643,6 @@ export default function Register() {
     body = (
       <>
         <Heading
-          eyebrow="Confirm your email"
           title="Confirm your email address"
           sub="Your client account is created. Enter the 6-digit code we emailed you to activate it."
         />
@@ -632,7 +650,7 @@ export default function Register() {
           tone="brand"
           icon="mail-check"
           title="Check your inbox"
-          body="We sent a verification code to the address below. The code expires after a short time."
+          body="We sent a verification code to the address below."
         >
           <div
             style={{
@@ -710,16 +728,6 @@ export default function Register() {
             </Button>
           </form>
 
-          <p
-            style={{
-              margin: 0,
-              fontSize: "var(--fs-body-sm)",
-              color: "var(--text-muted)",
-            }}
-          >
-            Nothing in your inbox after a few minutes? Check your spam folder, then send
-            the code again.
-          </p>
           <Button
             variant="secondary"
             iconLeft="refresh-cw"
