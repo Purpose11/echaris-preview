@@ -21,6 +21,7 @@ import AdminLogin from "@/pages/Admin/Login";
 import AdminMarketplace from "@/pages/Admin/Marketplace";
 import AdminMarketplaceFinancingDetail from "@/pages/Admin/MarketplaceFinancingDetail";
 import AdminOverview from "@/pages/Admin/Overview";
+import AdminPaymentDetail from "@/pages/Admin/PaymentDetail";
 import AdminPayments from "@/pages/Admin/Payments";
 import AdminPayouts from "@/pages/Admin/Payouts";
 import AdminPickupAddresses from "@/pages/Admin/PickupAddresses";
@@ -83,6 +84,7 @@ export const appRoutes: RouteObject[] = [
       { path: "commitments", element: <AdminCommitments /> },
       { path: "return-percentage", element: <AdminReturnPercentage /> },
       { path: "payments", element: <AdminPayments /> },
+      { path: "payments/:paymentId", element: <AdminPaymentDetail /> },
       { path: "payouts", element: <AdminPayouts /> },
       { path: "payouts/new", element: <AdminRecordPayout /> },
       { path: "marketplace", element: <AdminMarketplace /> },

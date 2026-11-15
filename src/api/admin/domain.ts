@@ -272,6 +272,8 @@ export type AdminPaymentDirection = "INCOMING" | "OUTGOING" | string;
 
 export interface AdminUserPayment {
   id: string;
+  createdAt?: string | null;
+  updatedAt?: string | null;
   userId?: string | null;
   customerId?: string | null;
   purpose?: AdminPaymentPurpose | null;
@@ -332,6 +334,29 @@ export async function getAdminPayment(
 ): Promise<ApiResponse<AdminUserPayment>> {
   const { data } = await coreApi.get<ApiResponse<AdminUserPayment>>(
     `/user-payments/private/admin/${paymentId}`,
+  );
+  return data;
+}
+
+export async function updateAdminPaymentStatus(
+  userPaymentId: string,
+  status: "APPROVED" | "REJECTED",
+  reason?: string,
+): Promise<ApiResponse<AdminUserPayment>> {
+  const trimmedReason = reason?.trim();
+  if (status === "REJECTED" && !trimmedReason) {
+    throw new Error("A rejection reason is required.");
+  }
+
+  const { data } = await coreApi.put<ApiResponse<AdminUserPayment>>(
+    `/user-payments/private/admin/${userPaymentId}/update-status`,
+    null,
+    {
+      params: {
+        status,
+        ...(status === "REJECTED" && trimmedReason ? { reason: trimmedReason } : {}),
+      },
+    },
   );
   return data;
 }

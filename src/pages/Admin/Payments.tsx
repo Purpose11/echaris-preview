@@ -1,7 +1,8 @@
 import { useQueries } from "@tanstack/react-query";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Search } from "lucide-react";
+import { ArrowUpRight, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { getAdminCustomer } from "@/api/admin/admin";
 import type { AdminUserPayment } from "@/api/admin/domain";
@@ -149,7 +150,14 @@ export default function Payments() {
             null;
 
           return (
-            <span className="font-medium text-[var(--text-heading)]">{label || "—"}</span>
+            <Link
+              to={`/admin/payments/${row.original.id}`}
+              className="group inline-flex max-w-full items-center gap-1.5 font-semibold no-underline hover:underline hover:decoration-[var(--border-strong)] hover:underline-offset-4"
+              style={{ color: "var(--text-heading)" }}
+            >
+              <span className="truncate">{label || "Payment"}</span>
+              <ArrowUpRight className="size-3.5 shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100" />
+            </Link>
           );
         },
       },

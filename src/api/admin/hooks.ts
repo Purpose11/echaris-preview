@@ -41,6 +41,7 @@ import {
   getAdminCommitmentRate,
   getAdminCustomerPayoutAccount,
   getAdminFinancing,
+  getAdminPayment,
   getAdminProduct,
   getEcharisAccountDetails,
   listAdminCategories,
@@ -64,6 +65,7 @@ import {
   type UpdateAdminCommitmentRateRequest,
   updateAdminFinancingPaymentStatus,
   updateAdminFulfillmentStatus,
+  updateAdminPaymentStatus,
   updateEcharisAccountDetails,
 } from "@/api/admin/domain";
 import { adminKeys } from "@/api/admin/querykeys";
@@ -703,9 +705,50 @@ export function useUpdateAdminCommitmentRate() {
 
 export function useAdminPayments(params: ListAdminPaymentsParams = {}, enabled = true) {
   return useQuery({
-    queryKey: [...adminKeys.all, "payments", params] as const,
+    queryKey: adminKeys.payments(params as Record<string, unknown>),
     queryFn: () => listAdminPayments(params),
     enabled,
+  });
+}
+
+export function useAdminPayment(paymentId: string, enabled = true) {
+  return useQuery({
+    queryKey: adminKeys.paymentDetail(paymentId),
+    queryFn: () => getAdminPayment(paymentId),
+    enabled: enabled && Boolean(paymentId) && Boolean(getAccessToken()),
+  });
+}
+
+export function useUpdateAdminPaymentStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      userPaymentId,
+      status,
+      reason,
+    }: {
+      userPaymentId: string;
+      status: "APPROVED" | "REJECTED";
+      reason?: string;
+    }) => updateAdminPaymentStatus(userPaymentId, status, reason),
+    onSuccess: (res, variables) => {
+      toast.success(res.message || "Payment status updated");
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, "payments"],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: adminKeys.paymentDetail(variables.userPaymentId),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, "financings"],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, "commitments"],
+      });
+    },
+    onError: (error: unknown) => {
+      toast.error(normalizeError(error));
+    },
   });
 }
 

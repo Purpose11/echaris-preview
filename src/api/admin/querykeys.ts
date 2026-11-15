@@ -36,6 +36,9 @@ export const adminKeys = {
   commitments: (params: Record<string, unknown> = {}) =>
     [...adminKeys.all, "commitments", params] as const,
   commitmentRate: () => [...adminKeys.all, "commitment-rate"] as const,
+  payments: (params: Record<string, unknown> = {}) =>
+    [...adminKeys.all, "payments", params] as const,
+  paymentDetail: (paymentId: string) => [...adminKeys.all, "payment", paymentId] as const,
   financings: (params: Record<string, unknown> = {}) =>
     [...adminKeys.all, "financings", params] as const,
   financingDetail: (financingId: string) =>
