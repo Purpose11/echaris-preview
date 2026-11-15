@@ -1,6 +1,12 @@
 import React from "react";
 
-export function Textarea({ rows = 4, invalid, disabled, style, ...rest }) {
+export function Textarea({
+  rows = 4,
+  invalid = false,
+  disabled = false,
+  style = {},
+  ...rest
+}) {
   const [focus, setFocus] = React.useState(false);
   const border = invalid
     ? "var(--border-danger)"

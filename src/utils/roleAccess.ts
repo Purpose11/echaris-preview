@@ -5,11 +5,14 @@ import type { StoredUser } from "@/utils/authHelper";
 export type AdminFeature =
   | "overview"
   | "customers"
-  | "kyc"
   | "products"
+  | "categories"
   | "commitments"
+  | "return-percentage"
   | "payments"
+  | "payouts"
   | "marketplace"
+  | "pickup-addresses"
   | "admins"
   | "settings";
 
@@ -26,22 +29,28 @@ export const ROLE_FEATURES: Record<AdminRole, readonly AdminFeature[]> = {
   SUPER_ADMIN: [
     "overview",
     "customers",
-    "kyc",
     "products",
+    "categories",
     "commitments",
+    "return-percentage",
     "payments",
+    "payouts",
     "marketplace",
+    "pickup-addresses",
     "admins",
     "settings",
   ],
   ADMIN: [
     "overview",
     "customers",
-    "kyc",
     "products",
+    "categories",
     "commitments",
+    "return-percentage",
     "payments",
+    "payouts",
     "marketplace",
+    "pickup-addresses",
     "settings",
   ],
 };
@@ -49,20 +58,43 @@ export const ROLE_FEATURES: Record<AdminRole, readonly AdminFeature[]> = {
 export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
   { label: "Overview", path: "/admin", feature: "overview", icon: "layout-grid" },
   { label: "Customers", path: "/admin/customers", feature: "customers", icon: "users" },
-  { label: "KYC review", path: "/admin/kyc", feature: "kyc", icon: "id-card" },
   { label: "Products", path: "/admin/products", feature: "products", icon: "inbox" },
+  {
+    label: "Categories",
+    path: "/admin/categories",
+    feature: "categories",
+    icon: "tags",
+  },
   {
     label: "Commitments",
     path: "/admin/commitments",
     feature: "commitments",
     icon: "trending-up",
   },
+  {
+    label: "Return percentage",
+    path: "/admin/return-percentage",
+    feature: "return-percentage",
+    icon: "percent",
+  },
   { label: "Payments", path: "/admin/payments", feature: "payments", icon: "wallet" },
+  {
+    label: "Payouts",
+    path: "/admin/payouts",
+    feature: "payouts",
+    icon: "banknote",
+  },
   {
     label: "Marketplace",
     path: "/admin/marketplace",
     feature: "marketplace",
     icon: "store",
+  },
+  {
+    label: "Pickup addresses",
+    path: "/admin/pickup-addresses",
+    feature: "pickup-addresses",
+    icon: "map-pin",
   },
   { label: "Admins", path: "/admin/admins", feature: "admins", icon: "shield-check" },
   { label: "Settings", path: "/admin/settings", feature: "settings", icon: "settings" },
@@ -71,11 +103,14 @@ export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
 /** Longest / most-specific rules first */
 export const PATH_FEATURE_RULES: Array<{ pattern: RegExp; feature: AdminFeature }> = [
   { pattern: /^\/admin\/customers(\/|$)/, feature: "customers" },
-  { pattern: /^\/admin\/kyc(\/|$)/, feature: "kyc" },
+  { pattern: /^\/admin\/categories(\/|$)/, feature: "categories" },
   { pattern: /^\/admin\/products(\/|$)/, feature: "products" },
   { pattern: /^\/admin\/commitments(\/|$)/, feature: "commitments" },
+  { pattern: /^\/admin\/return-percentage(\/|$)/, feature: "return-percentage" },
   { pattern: /^\/admin\/payments(\/|$)/, feature: "payments" },
+  { pattern: /^\/admin\/payouts(\/|$)/, feature: "payouts" },
   { pattern: /^\/admin\/marketplace(\/|$)/, feature: "marketplace" },
+  { pattern: /^\/admin\/pickup-addresses(\/|$)/, feature: "pickup-addresses" },
   { pattern: /^\/admin\/admins(\/|$)/, feature: "admins" },
   { pattern: /^\/admin\/settings(\/|$)/, feature: "settings" },
   { pattern: /^\/admin\/?$/, feature: "overview" },

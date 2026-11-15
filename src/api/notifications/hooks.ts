@@ -132,8 +132,12 @@ function parseSseChunk(buffer: string) {
   return { events, rest };
 }
 
-/** Keeps the SSE inbox stream alive while the client portal is open. */
-export function useNotificationStream(enabled = true) {
+/** Keeps the SSE inbox stream alive while the portal is open. */
+export function useNotificationStream(
+  enabled = true,
+  options: { showToasts?: boolean } = {},
+) {
+  const { showToasts = true } = options;
   const queryClient = useQueryClient();
   const retryRef = useRef(0);
 
@@ -177,6 +181,7 @@ export function useNotificationStream(enabled = true) {
             }
             if (item.event === "notification") {
               refreshInbox();
+              if (!showToasts) continue;
               try {
                 const payload = JSON.parse(item.data) as AppNotification;
                 if (payload?.title) {
@@ -213,5 +218,5 @@ export function useNotificationStream(enabled = true) {
       abort?.abort();
       if (reconnectTimer) clearTimeout(reconnectTimer);
     };
-  }, [enabled, queryClient]);
+  }, [enabled, queryClient, showToasts]);
 }

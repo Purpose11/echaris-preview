@@ -3,6 +3,7 @@ export type FulfillmentType = "PICKUP" | "DELIVERY";
 export type MarketFinancingStatus =
   | "AWAITING_PAYMENT"
   | "ACCUMULATING"
+  | "MATURED"
   | "ACTIVE"
   | "READY_FOR_DELIVERY"
   | "COMPLETED"
@@ -10,7 +11,16 @@ export type MarketFinancingStatus =
   | string;
 
 export type MarketFulfillmentStatus =
-  "AWAITING_RELEASE" | "RELEASED" | "DELIVERED" | string;
+  | "AWAITING_RELEASE"
+  | "RELEASED"
+  | "READY_FOR_FULFILLMENT"
+  | "PREPARING"
+  | "PACKAGED"
+  | "IN_TRANSIT"
+  | "DELIVERED"
+  | "READY_FOR_PICKUP"
+  | "COLLECTED"
+  | string;
 
 export interface MarketFulfillment {
   type: FulfillmentType | string;
@@ -21,6 +31,13 @@ export interface MarketFulfillment {
   deliveryAddress?: string | null;
   phoneNumber?: string | null;
   status?: string | null;
+}
+
+export interface MarketFulfillmentHistoryEntry {
+  previousStatus?: string | null;
+  newStatus?: string | null;
+  changedByUserId?: string | null;
+  changedAt?: string | null;
 }
 
 export interface MarketFinancingProduct {
@@ -51,7 +68,7 @@ export interface MarketFinancing {
   status: MarketFinancingStatus;
   fulfillment?: MarketFulfillment | null;
   fulfillmentStatus?: MarketFulfillmentStatus | null;
-  fulfillmentHistory?: unknown[] | null;
+  fulfillmentHistory?: MarketFulfillmentHistoryEntry[] | null;
   agreementAcceptedAt?: string | null;
   fundingPaymentId?: string | null;
   approvedAt?: string | null;

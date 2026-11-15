@@ -15,7 +15,8 @@ export function useCreateOrUpdateAddress() {
 
   return useMutation({
     mutationFn: (payload: CreateOrUpdateAddressRequest) => createOrUpdateAddress(payload),
-    onSuccess: () => {
+    onSuccess: (res) => {
+      toast.success(res.message || "Address saved successfully");
       void queryClient.invalidateQueries({ queryKey: addressKeys.lists() });
     },
     onError: (error: unknown) => {

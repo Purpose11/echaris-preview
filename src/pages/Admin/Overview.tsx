@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import {
   useAdminCommitments,
@@ -11,6 +11,7 @@ import {
   useAdminProducts,
 } from "@/api/admin/hooks";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminOverviewSkeleton } from "@/components/ui/page-skeleton";
 import { Button } from "@/design-system/components/core/Button.jsx";
 import { Icon } from "@/design-system/components/core/Icon.jsx";
 import { cn } from "@/lib/utils";
@@ -41,22 +42,19 @@ function StatCard({
   label,
   value,
   hint,
-  href,
   brand = false,
   icon,
 }: {
   label: string;
   value: string | number;
   hint: string;
-  href: string;
   brand?: boolean;
   icon: string;
 }) {
   return (
-    <Link
-      to={href}
+    <article
       className={cn(
-        "rounded-lg p-5 no-underline transition-opacity hover:opacity-95 sm:p-6 md:p-8",
+        "rounded-lg p-5 sm:p-6 md:p-8",
         brand
           ? "bg-[var(--brand-primary)] text-white"
           : "border border-[var(--border-subtle)] bg-[var(--surface-card)]",
@@ -66,7 +64,7 @@ function StatCard({
         <p
           className={cn(
             "m-0 text-[11px] font-semibold tracking-[0.08em] uppercase",
-            brand ? "opacity-90" : "text-[var(--text-muted)]",
+            brand ? "text-white" : "text-[var(--text-muted)]",
           )}
         >
           {label}
@@ -86,12 +84,12 @@ function StatCard({
       <p
         className={cn(
           "mt-4 mb-0 text-sm",
-          brand ? "opacity-90" : "text-[var(--text-muted)]",
+          brand ? "text-white" : "text-[var(--text-muted)]",
         )}
       >
         {hint}
       </p>
-    </Link>
+    </article>
   );
 }
 
@@ -114,6 +112,19 @@ export default function Overview() {
   const commitments = commitmentsQuery.data?.data?.totalElements ?? "—";
   const pendingPayments = paymentsQuery.data?.data?.totalElements ?? "—";
   const financings = financingsQuery.data?.data?.totalElements ?? "—";
+
+  const overviewLoading =
+    customersQuery.isLoading ||
+    kycQuery.isLoading ||
+    productsQuery.isLoading ||
+    commitmentsQuery.isLoading ||
+    paymentsQuery.isLoading ||
+    financingsQuery.isLoading ||
+    (isSuper && adminCountsQuery.isLoading);
+
+  if (overviewLoading) {
+    return <AdminOverviewSkeleton />;
+  }
 
   return (
     <div className="flex w-full flex-col gap-8 md:gap-10">
@@ -146,43 +157,32 @@ export default function Overview() {
           label="Customers"
           value={customers}
           hint="Registered client accounts"
-          href="/admin/customers"
           brand
           icon="users"
         />
         <StatCard
           label="Pending KYC"
           value={pendingKyc}
-          hint="Documents awaiting review"
-          href="/admin/kyc"
+          hint="Review from customer profiles"
           icon="id-card"
         />
-        <StatCard
-          label="Products"
-          value={products}
-          hint="Catalog items"
-          href="/admin/products"
-          icon="inbox"
-        />
+        <StatCard label="Products" value={products} hint="Catalog items" icon="inbox" />
         <StatCard
           label="Commitments"
           value={commitments}
           hint="Capital programs"
-          href="/admin/commitments"
           icon="trending-up"
         />
         <StatCard
           label="Pending payments"
           value={pendingPayments}
           hint="Awaiting action"
-          href="/admin/payments"
           icon="wallet"
         />
         <StatCard
           label="Marketplace financings"
           value={financings}
           hint="Active financing programs"
-          href="/admin/marketplace"
           icon="store"
         />
       </section>

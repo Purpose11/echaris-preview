@@ -17,6 +17,9 @@ const STYLES: Record<string, string> = {
   COMPLETED:
     "bg-[var(--surface-success-subtle,#EAF7EE)] text-[var(--text-success,#067647)]",
   CANCELLED: "bg-[var(--surface-muted,#F3F1EE)] text-[var(--text-muted)]",
+  SUCCESS:
+    "bg-[var(--surface-success-subtle,#EAF7EE)] text-[var(--text-success,#067647)]",
+  FAILED: "bg-[var(--surface-danger-subtle,#FEECEC)] text-[var(--text-danger,#B42318)]",
   IN_STOCK:
     "bg-[var(--surface-success-subtle,#EAF7EE)] text-[var(--text-success,#067647)]",
   LOW_STOCK:

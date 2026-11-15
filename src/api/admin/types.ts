@@ -87,11 +87,16 @@ export interface AdminCustomer {
   emailAddress: string;
   phoneNumber?: string | null;
   profilePictureUrl?: string | null;
+  dateOfBirth?: string | null;
   age?: string | number | null;
   gender?: Gender | null;
   active: boolean;
   verified: boolean;
   doneKyc: boolean;
+  marketingEmailsEnabled?: boolean;
+  lastLoginAt?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 }
 
 export interface ListAdminCustomersParams {

@@ -1,5 +1,7 @@
 import { type ColumnDef } from "@tanstack/react-table";
+import { ArrowUpRight, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAdminCounts, useAdminsList } from "@/api/admin/hooks";
 import type { AdminProfile } from "@/api/admin/types";
@@ -10,8 +12,9 @@ import { Button } from "@/design-system/components/core/Button.jsx";
 import { normalizeError } from "@/utils/normalizeError";
 
 export default function Admins() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(0);
-  const pageSize = 20;
+  const pageSize = 10;
 
   const adminsQuery = useAdminsList({ page: page + 1, size: pageSize });
   const countsQuery = useAdminCounts();
@@ -24,14 +27,23 @@ export default function Admins() {
       {
         id: "name",
         header: "Admin",
-        cell: ({ row }) => (
-          <span className="font-semibold text-[var(--text-heading)]">
-            {[row.original.firstName, row.original.lastName]
+        cell: ({ row }) => {
+          const name =
+            [row.original.firstName, row.original.lastName]
               .filter(Boolean)
               .join(" ")
-              .trim() || row.original.emailAddress}
-          </span>
-        ),
+              .trim() || row.original.emailAddress;
+          return (
+            <Link
+              to={`/admin/admins/${row.original.adminId}`}
+              className="group inline-flex max-w-full items-center gap-1.5 font-semibold no-underline hover:underline hover:decoration-[var(--border-strong)] hover:underline-offset-4"
+              style={{ color: "var(--text-heading)" }}
+            >
+              <span className="truncate">{name}</span>
+              <ArrowUpRight className="size-3.5 shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100" />
+            </Link>
+          );
+        },
       },
       {
         accessorKey: "emailAddress",
@@ -57,7 +69,17 @@ export default function Admins() {
     <div className="flex w-full flex-col gap-8 md:gap-10">
       <AdminPageHeader
         title="Admins"
-        description="Manage administrator accounts. Creating and deactivating admins requires super admin access."
+        description="Manage administrator accounts. Creating and managing admins requires super admin access."
+        actions={
+          <Button
+            type="button"
+            className="h-11 rounded-md border-0 px-4 text-sm font-semibold shadow-none ring-0"
+            onClick={() => navigate("/admin/admins/new")}
+          >
+            <Plus className="size-4" />
+            Add admin
+          </Button>
+        }
       />
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">

@@ -14,7 +14,7 @@ export interface CreateOrUpdateAddressRequest {
 
 export interface AddressRecord {
   addressId: string;
-  userId: string;
+  userId?: string | null;
   addressType: AddressType;
   country: string | null;
   state: string | null;

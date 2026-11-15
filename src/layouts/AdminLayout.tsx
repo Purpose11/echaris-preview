@@ -11,7 +11,7 @@ import { Logo } from "@/design-system/components/core/Logo.jsx";
 
 export default function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  useNotificationStream(true);
+  useNotificationStream(true, { showToasts: false });
 
   useEffect(() => {
     if (!mobileOpen) return;

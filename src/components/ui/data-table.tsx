@@ -161,9 +161,7 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      {showPagination ? (
-        <DataTablePagination table={table} className="justify-center sm:justify-end" />
-      ) : null}
+      {showPagination ? <DataTablePagination table={table} /> : null}
     </div>
   );
 }

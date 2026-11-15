@@ -223,10 +223,10 @@ export default function Settings() {
               aria-selected={tab === item.id}
               onClick={() => setTab(item.id)}
               className={cn(
-                "shrink-0 rounded-md px-3 py-2 text-sm font-semibold whitespace-nowrap transition-colors",
+                "shrink-0 rounded-md border-0 px-3 py-2 text-sm font-semibold whitespace-nowrap shadow-none transition-colors outline-none",
                 tab === item.id
                   ? "bg-[var(--surface-brand-subtle)] text-[var(--text-brand)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-heading)]",
+                  : "bg-transparent text-[var(--text-muted)] hover:text-[var(--text-heading)]",
               )}
             >
               {item.label}

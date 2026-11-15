@@ -264,4 +264,69 @@ export function CreateCommitmentSkeleton() {
   );
 }
 
+export function AdminCustomerDetailSkeleton() {
+  return (
+    <div
+      className="flex w-full flex-col gap-8 md:gap-10"
+      aria-busy="true"
+      aria-label="Loading customer details"
+    >
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-4 w-3" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+      <PageHeaderSkeleton withAction />
+      <section className="grid grid-cols-1 gap-5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-card)] p-5 sm:grid-cols-2 sm:p-6 md:grid-cols-3 md:p-8">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-5 w-36" />
+          </div>
+        ))}
+      </section>
+      <section className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-card)] p-5 sm:p-6 md:p-8">
+        <Skeleton className="mb-5 h-6 w-40" />
+        <AdminKycDetailSkeleton />
+      </section>
+    </div>
+  );
+}
+
+export function AdminOverviewSkeleton() {
+  return (
+    <div
+      className="flex w-full flex-col gap-8 md:gap-10"
+      aria-busy="true"
+      aria-label="Loading admin overview"
+    >
+      <PageHeaderSkeleton />
+      <StatCardsSkeleton count={6} className="xl:grid-cols-3" />
+    </div>
+  );
+}
+
+export function AdminKycDetailSkeleton() {
+  return (
+    <div className="space-y-5" aria-busy="true" aria-label="Loading KYC documents">
+      {Array.from({ length: 2 }).map((_, i) => (
+        <div
+          key={i}
+          className="space-y-3 rounded-lg border border-[var(--border-subtle)] p-4"
+        >
+          <div className="flex justify-between gap-3">
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+          <Skeleton className="h-4 w-48" />
+          <div className="flex gap-3">
+            <Skeleton className="h-10 w-28" />
+            <Skeleton className="h-10 w-24" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export { PageHeaderSkeleton, StatCardsSkeleton };

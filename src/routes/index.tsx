@@ -1,20 +1,33 @@
-import type { RouteObject } from "react-router-dom";
+import { Navigate, type RouteObject } from "react-router-dom";
 
 import AdminLayout from "@/layouts/AdminLayout";
 import MainLayout from "@/layouts/MainLayout";
 import UserLayout from "@/layouts/UserLayout";
 import About from "@/pages/About.jsx";
+import AdminAdminDetail from "@/pages/Admin/AdminDetail";
 import AdminAdmins from "@/pages/Admin/Admins";
+import AdminCategories from "@/pages/Admin/Categories";
 import AdminCommitments from "@/pages/Admin/Commitments";
+import AdminCreateAdmin from "@/pages/Admin/CreateAdmin";
+import AdminCreateCategory from "@/pages/Admin/CreateCategory";
+import AdminCreatePickupAddress from "@/pages/Admin/CreatePickupAddress";
+import AdminCreateProduct from "@/pages/Admin/CreateProduct";
 import AdminCustomerDetail from "@/pages/Admin/CustomerDetail";
 import AdminCustomers from "@/pages/Admin/Customers";
+import AdminEditCategory from "@/pages/Admin/EditCategory";
+import AdminEditProduct from "@/pages/Admin/EditProduct";
 import AdminForgotPassword from "@/pages/Admin/ForgotPassword";
-import AdminKyc from "@/pages/Admin/Kyc";
 import AdminLogin from "@/pages/Admin/Login";
 import AdminMarketplace from "@/pages/Admin/Marketplace";
+import AdminMarketplaceFinancingDetail from "@/pages/Admin/MarketplaceFinancingDetail";
 import AdminOverview from "@/pages/Admin/Overview";
 import AdminPayments from "@/pages/Admin/Payments";
+import AdminPayouts from "@/pages/Admin/Payouts";
+import AdminPickupAddresses from "@/pages/Admin/PickupAddresses";
+import AdminProductDetail from "@/pages/Admin/ProductDetail";
 import AdminProducts from "@/pages/Admin/Products";
+import AdminRecordPayout from "@/pages/Admin/RecordPayout";
+import AdminReturnPercentage from "@/pages/Admin/ReturnPercentage";
 import AdminSettings from "@/pages/Admin/Settings";
 import Contact from "@/pages/Contact.jsx";
 import CommitmentDetails from "@/pages/Dashboard/CommitmentDetails";
@@ -59,12 +72,29 @@ export const appRoutes: RouteObject[] = [
       { index: true, element: <AdminOverview /> },
       { path: "customers", element: <AdminCustomers /> },
       { path: "customers/:customerId", element: <AdminCustomerDetail /> },
-      { path: "kyc", element: <AdminKyc /> },
+      { path: "kyc", element: <Navigate to="/admin/customers" replace /> },
       { path: "products", element: <AdminProducts /> },
+      { path: "products/new", element: <AdminCreateProduct /> },
+      { path: "products/:productId/edit", element: <AdminEditProduct /> },
+      { path: "products/:productId", element: <AdminProductDetail /> },
+      { path: "categories", element: <AdminCategories /> },
+      { path: "categories/new", element: <AdminCreateCategory /> },
+      { path: "categories/:categoryId/edit", element: <AdminEditCategory /> },
       { path: "commitments", element: <AdminCommitments /> },
+      { path: "return-percentage", element: <AdminReturnPercentage /> },
       { path: "payments", element: <AdminPayments /> },
+      { path: "payouts", element: <AdminPayouts /> },
+      { path: "payouts/new", element: <AdminRecordPayout /> },
       { path: "marketplace", element: <AdminMarketplace /> },
+      {
+        path: "marketplace/:financingId",
+        element: <AdminMarketplaceFinancingDetail />,
+      },
+      { path: "pickup-addresses", element: <AdminPickupAddresses /> },
+      { path: "pickup-addresses/new", element: <AdminCreatePickupAddress /> },
       { path: "admins", element: <AdminAdmins /> },
+      { path: "admins/new", element: <AdminCreateAdmin /> },
+      { path: "admins/:adminId", element: <AdminAdminDetail /> },
       { path: "settings", element: <AdminSettings /> },
       { path: "*", element: <NotFound variant="admin" /> },
     ],

@@ -10,7 +10,7 @@ export async function createOrUpdateAddress(
   payload: CreateOrUpdateAddressRequest,
 ): Promise<ApiResponse<AddressRecord>> {
   const { data } = await coreApi.post<ApiResponse<AddressRecord>>(
-    "/addresses/private/create-or-update",
+    "/addresses/private",
     payload,
   );
   return data;
