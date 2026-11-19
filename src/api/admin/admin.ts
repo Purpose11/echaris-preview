@@ -140,8 +140,8 @@ export async function listAdminCustomers(
     "/customer/private/admin",
     {
       params: {
-        page: params.page ?? 1,
-        size: params.size ?? 10,
+        page: params.page,
+        size: params.size,
         ...(params.searchParam?.trim() ? { searchParam: params.searchParam.trim() } : {}),
       },
     },
@@ -217,8 +217,8 @@ export async function listAdminKyc(
     "/customer/private/admin/kyc",
     {
       params: {
-        page: params.page ?? 1,
-        size: params.size ?? 20,
+        page: params.page,
+        size: params.size,
         status: params.status ?? "PENDING",
       },
     },

@@ -3911,12 +3911,16 @@ html {
   font-family: var(--font-sans);
   font-size: var(--fs-body-lg);
   font-weight: var(--fw-semibold);
+  text-decoration: none;
   cursor: pointer;
   box-shadow: var(--shadow-brand);
   transition: var(--transition-control);
 }
-.wa-btn:hover {
+.wa-btn:hover,
+.wa-btn:focus-visible {
+  color: #fff;
   background: linear-gradient(135deg, #ff6b14, #e84e00);
+  text-decoration: none;
 }
 .wa-r {
   position: relative;
@@ -3983,11 +3987,15 @@ html {
   font-family: var(--font-sans);
   font-size: var(--fs-body-lg);
   font-weight: var(--fw-semibold);
+  text-decoration: none;
   cursor: pointer;
   transition: var(--transition-control);
 }
-.wa-send:hover {
+.wa-send:hover,
+.wa-send:focus-visible {
+  color: #fff;
   background: #268c42;
+  text-decoration: none;
 }
 .wa-badge {
   position: absolute;

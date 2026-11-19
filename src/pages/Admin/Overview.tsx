@@ -98,12 +98,12 @@ export default function Overview() {
   const role = getAdminRole();
   const isSuper = role === "SUPER_ADMIN";
 
-  const customersQuery = useAdminCustomers({ page: 1, size: 1 });
-  const kycQuery = useAdminKycList({ page: 1, size: 1, status: "PENDING" });
-  const productsQuery = useAdminProducts({ page: 1, size: 1 });
-  const commitmentsQuery = useAdminCommitments({ page: 1, size: 1 });
-  const paymentsQuery = useAdminPayments({ page: 1, size: 1, status: "PENDING" });
-  const financingsQuery = useAdminFinancings({ page: 1, size: 1 });
+  const customersQuery = useAdminCustomers();
+  const kycQuery = useAdminKycList({ status: "PENDING" });
+  const productsQuery = useAdminProducts();
+  const commitmentsQuery = useAdminCommitments();
+  const paymentsQuery = useAdminPayments({ status: "PENDING" });
+  const financingsQuery = useAdminFinancings();
   const adminCountsQuery = useAdminCounts(isSuper);
 
   const customers = customersQuery.data?.data?.totalElements ?? "—";

@@ -24,6 +24,12 @@ const WA = (props) => (
 const BLANK = { name: "", phone: "", email: "", subject: "", message: "" };
 const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v.trim());
 
+/** Official contact line (same as tel: on this page), E.164 without + */
+const WHATSAPP_NUMBER = "2347035809096";
+const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+  "Hi ECharis,",
+)}`;
+
 export default function Contact() {
   const [f, setF] = React.useState(BLANK);
   const [err, setErr] = React.useState({});
@@ -217,10 +223,15 @@ export default function Contact() {
                 For payment issues, KYC and compliance, fraud suspicions and technical
                 help contact us below
               </p>
-              <button type="button" className="wa-btn">
+              <a
+                className="wa-btn"
+                href={WHATSAPP_HREF}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <WA size={20} />
                 Send us a message
-              </button>
+              </a>
             </div>
 
             <div className="wa-r">
@@ -241,10 +252,15 @@ export default function Contact() {
                     <p>Hi there</p>
                     <p>How can I help you?</p>
                   </div>
-                  <button type="button" className="wa-send">
+                  <a
+                    className="wa-send"
+                    href={WHATSAPP_HREF}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <WA size={20} />
                     Send us a message
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
@@ -261,24 +277,24 @@ export default function Contact() {
             <span className="cf-eyebrow">Reach us directly</span>
 
             <div className="ct-rows">
-              <a className="ct-row" href="mailto:info@echaris.com">
+              <a className="ct-row" href="mailto:echarissecc@gmail.com">
                 <span className="ct-ic">
                   <Icon name="mail" size={18} />
                 </span>
                 <span>
                   <span className="ct-l">EMAIL</span>
-                  <span className="ct-v">info@echaris.com</span>
+                  <span className="ct-v">echarissecc@gmail.com</span>
                 </span>
                 <Icon name="arrow-up-right" size={16} />
               </a>
 
-              <a className="ct-row" href="tel:09033324525354">
+              <a className="ct-row" href="tel:07035809096">
                 <span className="ct-ic">
                   <Icon name="phone" size={18} />
                 </span>
                 <span>
                   <span className="ct-l">PHONE</span>
-                  <span className="ct-v">09033324525354</span>
+                  <span className="ct-v">07035809096</span>
                 </span>
                 <Icon name="arrow-up-right" size={16} />
               </a>

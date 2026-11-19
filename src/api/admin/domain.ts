@@ -48,8 +48,8 @@ export async function listAdminProducts(
     "/product/private",
     {
       params: {
-        page: params.page ?? 1,
-        size: params.size ?? 20,
+        page: params.page,
+        size: params.size,
         ...(search ? { search } : {}),
         ...(params.categoryId ? { categoryId: params.categoryId } : {}),
       },
@@ -221,8 +221,8 @@ export async function listAdminCommitments(
     "/commitments/private/admin",
     {
       params: {
-        page: params.page ?? 1,
-        size: params.size ?? 20,
+        page: params.page,
+        size: params.size,
         ...(params.userId?.trim() ? { userId: params.userId.trim() } : {}),
       },
     },
@@ -314,8 +314,8 @@ export async function listAdminPayments(
     "/user-payments/private/admin",
     {
       params: {
-        page: params.page ?? 1,
-        size: params.size ?? 20,
+        page: params.page,
+        size: params.size,
         ...(search ? { search } : {}),
         ...(params.status ? { status: params.status } : {}),
         ...(params.customerUserId?.trim()
@@ -473,8 +473,8 @@ export async function listAdminFinancings(
     "/marketplace/private/admin/get-admin-financings",
     {
       params: {
-        page: params.page ?? 1,
-        size: params.size ?? 20,
+        page: params.page,
+        size: params.size,
         ...(params.status ? { status: params.status } : {}),
         ...(search ? { search } : {}),
       },
