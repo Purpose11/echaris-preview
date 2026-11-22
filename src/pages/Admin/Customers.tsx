@@ -47,12 +47,8 @@ export default function Customers() {
   const [genderFilter, setGenderFilter] = useState("");
   const [registeredFrom, setRegisteredFrom] = useState("");
   const [registeredTo, setRegisteredTo] = useState("");
-  const [page, setPage] = useState(0);
-  const pageSize = 10;
 
   const customersQuery = useAdminCustomers({
-    page: page + 1,
-    size: pageSize,
     searchParam: submittedSearch || undefined,
     active: parseTriState(activeFilter),
     verified: parseTriState(verifiedFilter),
@@ -62,7 +58,6 @@ export default function Customers() {
   });
 
   const rows = customersQuery.data?.data?.data ?? [];
-  const totalPages = customersQuery.data?.data?.totalPage ?? 0;
   const hasActiveFilters =
     Boolean(submittedSearch) ||
     Boolean(activeFilter) ||
@@ -139,7 +134,6 @@ export default function Customers() {
     setGenderFilter("");
     setRegisteredFrom("");
     setRegisteredTo("");
-    setPage(0);
   };
 
   return (
@@ -153,7 +147,6 @@ export default function Customers() {
         className="flex w-full min-w-0 flex-col gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          setPage(0);
           setSubmittedSearch(search.trim());
         }}
       >
@@ -180,10 +173,7 @@ export default function Customers() {
             <Select
               id="filter-active"
               value={activeFilter}
-              onChange={(e) => {
-                setActiveFilter(e.target.value);
-                setPage(0);
-              }}
+              onChange={(e) => setActiveFilter(e.target.value)}
               options={ACTIVE_OPTIONS}
             />
           </FormField>
@@ -191,10 +181,7 @@ export default function Customers() {
             <Select
               id="filter-verified"
               value={verifiedFilter}
-              onChange={(e) => {
-                setVerifiedFilter(e.target.value);
-                setPage(0);
-              }}
+              onChange={(e) => setVerifiedFilter(e.target.value)}
               options={VERIFIED_OPTIONS}
             />
           </FormField>
@@ -202,10 +189,7 @@ export default function Customers() {
             <Select
               id="filter-gender"
               value={genderFilter}
-              onChange={(e) => {
-                setGenderFilter(e.target.value);
-                setPage(0);
-              }}
+              onChange={(e) => setGenderFilter(e.target.value)}
               options={GENDER_OPTIONS}
             />
           </FormField>
@@ -214,10 +198,7 @@ export default function Customers() {
               id="filter-from"
               type="date"
               value={registeredFrom}
-              onChange={(e) => {
-                setRegisteredFrom(e.target.value);
-                setPage(0);
-              }}
+              onChange={(e) => setRegisteredFrom(e.target.value)}
             />
           </FormField>
           <FormField label="Registered to" htmlFor="filter-to">
@@ -225,10 +206,7 @@ export default function Customers() {
               id="filter-to"
               type="date"
               value={registeredTo}
-              onChange={(e) => {
-                setRegisteredTo(e.target.value);
-                setPage(0);
-              }}
+              onChange={(e) => setRegisteredTo(e.target.value)}
             />
           </FormField>
         </div>
@@ -267,17 +245,6 @@ export default function Customers() {
           data={rows}
           isLoading={customersQuery.isLoading}
           emptyMessage="No customers found."
-          manualPagination
-          pageCount={Math.max(totalPages, 1)}
-          pagination={{ pageIndex: page, pageSize }}
-          onPaginationChange={(updater) => {
-            const next =
-              typeof updater === "function"
-                ? updater({ pageIndex: page, pageSize })
-                : updater;
-            setPage(next.pageIndex);
-          }}
-          hidePaginationWhenSinglePage={false}
         />
       )}
     </div>

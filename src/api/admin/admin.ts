@@ -140,8 +140,8 @@ export async function listAdminCustomers(
     "/customer/private/admin",
     {
       params: {
-        page: params.page,
-        size: params.size,
+        ...(params.page !== undefined ? { page: params.page } : {}),
+        ...(params.size !== undefined ? { size: params.size } : {}),
         ...(params.searchParam?.trim() ? { searchParam: params.searchParam.trim() } : {}),
       },
     },
@@ -157,8 +157,8 @@ export async function filterAdminCustomers(
     null,
     {
       params: {
-        page: params.page ?? 1,
-        size: params.size ?? 10,
+        ...(params.page !== undefined ? { page: params.page } : {}),
+        ...(params.size !== undefined ? { size: params.size } : {}),
         ...(params.searchParam?.trim() ? { searchParam: params.searchParam.trim() } : {}),
         ...(params.active !== undefined ? { active: params.active } : {}),
         ...(params.verified !== undefined ? { verified: params.verified } : {}),
